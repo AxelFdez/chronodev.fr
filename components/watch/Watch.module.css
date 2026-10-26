@@ -131,3 +131,17 @@
 .watch[data-etat='2'] .cap {
   fill: var(--w-seconds-2);
 }
+
+/* --- Couronne : la molette au pointeur --- */
+
+.couronne {
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .couronne {
+    pointer-events: auto;
+    cursor: ew-resize;
+    touch-action: none;
+  }
+}

@@ -1,4 +1,5 @@
 import { ContactValue } from '@/components/ContactValue';
+import { Epoques } from '@/components/epoques/Epoques';
 import { Watch } from '@/components/watch/Watch';
 import { contact, site } from '@/content/site';
 import styles from './page.module.css';
@@ -6,8 +7,11 @@ import styles from './page.module.css';
 export default function Home() {
   return (
     <main id="contenu">
-      <section className={styles.hero} aria-labelledby="accroche">
-        <div className={styles.texte}>
+      {/* Grain pleine page, sous le contenu ; son intensité suit l'époque cochée (CSS). */}
+      <div className={styles.grain} aria-hidden="true" />
+
+      <div className={styles.scene}>
+        <section className={styles.hero} aria-labelledby="accroche">
           <p className={styles.surtitre}>{site.surtitre}</p>
           <h1 id="accroche" className={styles.accroche}>
             {site.accroche}
@@ -17,12 +21,20 @@ export default function Home() {
           <a className={styles.cta} href="#contact">
             {site.cta}
           </a>
-        </div>
-        {/* Latérale et moins contrastée que le texte : elle ne passe jamais avant lui. */}
+        </section>
+
+        {/* Latérale et moins contrastée que le texte. Sur desktop, elle reste visible
+            pendant qu'on parcourt les époques, puisque leur choix la transforme. */}
         <div className={styles.montre}>
-          <Watch />
+          <div className={styles.montreCollante}>
+            <Watch />
+          </div>
         </div>
-      </section>
+
+        <div className={styles.zoneEpoques}>
+          <Epoques />
+        </div>
+      </div>
 
       <section id="contact" className={styles.contact} aria-labelledby="contact-titre">
         <h2 id="contact-titre" className={styles.titre}>

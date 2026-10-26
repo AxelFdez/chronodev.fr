@@ -197,8 +197,9 @@ test.describe('prefers-reduced-motion (vérification 2)', () => {
             : Object.keys((a.effect as KeyframeEffect).getKeyframes()[0] ?? {}).join(',');
         const problems = [];
         if (timing.iterations === Infinity) problems.push('boucle');
-        if (/transform|translate|rotate|scale|offset|top|left/.test(property))
-          problems.push('mouvement');
+        const mouvement =
+          /^(transform|translate|rotate|scale|offset.*|inset.*|top|right|bottom|left|margin.*|width|height)$/;
+        if (property.split(',').some((p) => mouvement.test(p.trim()))) problems.push('mouvement');
         if (Number(timing.duration) > 250) problems.push(`durée ${timing.duration} ms`);
         return problems.length ? [`${property} : ${problems.join(', ')}`] : [];
       }),

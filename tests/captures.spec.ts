@@ -39,3 +39,33 @@ for (const [name, viewport] of Object.entries(viewports)) {
     });
   }
 }
+
+// Les deux autres époques, cadrées sur leur section (la montre la suit sur desktop).
+const NOMS = { avant: 'Avant', pendant: 'Pendant' } as const;
+for (const [name, viewport] of Object.entries(viewports)) {
+  for (const theme of ['dark', 'light'] as const) {
+    for (const epoque of ['avant', 'pendant'] as const) {
+      test(`capture ${name}-${theme}-${epoque}`, async ({ browser }) => {
+        const context = await browser.newContext({ viewport });
+        const page = await context.newPage();
+        await storeTheme(page, theme);
+        await page.goto('/');
+        await hydrated(page);
+        await page.evaluate(() => document.fonts.ready);
+        await page.getByRole('radio', { name: NOMS[epoque] }).click();
+        await page.locator('#epoques').evaluate((e) => e.scrollIntoView({ block: 'start' }));
+        await page.screenshot({ path: `artifacts/screens/epoque-${name}-${theme}-${epoque}.png` });
+        await context.close();
+      });
+    }
+  }
+  test(`capture ${name}-dark-avant-sans-js`, async ({ browser }) => {
+    const context = await browser.newContext({ viewport, javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto('/');
+    await page.getByRole('radio', { name: 'Avant' }).click();
+    await page.locator('#epoques').evaluate((e) => e.scrollIntoView({ block: 'start' }));
+    await page.screenshot({ path: `artifacts/screens/epoque-${name}-dark-avant-sans-js.png` });
+    await context.close();
+  });
+}

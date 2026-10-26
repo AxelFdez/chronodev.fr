@@ -39,8 +39,11 @@ lui, est fixe : l'IA accélère, Axel décide et répond du résultat.
   clavier ; trois onglets sur mobile). Chaque position est une époque **du projet du
   client**. L'esthétique entière change d'une époque à l'autre, et **la montre elle-même
   se construit** — voir `MONTRE.md`.
-- La montre reste comme motif : couronne = menu, second poussoir = bascule de thème,
-  chrono visible. Elle ne disparaît pas après l'intro.
+- La montre reste comme motif : couronne = molette, second poussoir = bascule de thème,
+  chrono visible. Elle ne disparaît pas après l'intro. Le menu est un bouton « Menu »
+  dans la barre du haut.
+- « L'esthétique entière » change dans ces limites : la section des époques, l'état de
+  la montre et le grain. Le hero, la barre du haut et le contact restent fixes.
 - Position par défaut de la molette au chargement : **Après**, là où sont les offres et
   le contact.
 

@@ -12,10 +12,9 @@ for (const [, selector, body] of css.matchAll(/(:root[^{]*)\{([^}]*)\}/g)) {
   themes[name] = {
     ...themes[name],
     ...Object.fromEntries(
-      [...body.matchAll(/--([\w-]+):\s*(#[0-9a-f]{6}|var\(--[\w-]+\))/gi)].map(([, k, v]) => [
-        k,
-        v,
-      ]),
+      [...body.matchAll(/--([\w-]+):\s*(#[0-9a-f]{6}|var\(--[\w-]+\)|[0-9.]+)/gi)].map(
+        ([, k, v]) => [k, v],
+      ),
     ),
   };
 }
@@ -77,6 +76,29 @@ const pairs = {
     ['text', 'brass-light', UI, null, 'pictogramme sur le poussoir'],
   ],
 };
+
+// Le grain (Avant, le plus dense) recouvre le fond sous le texte du hero et des époques :
+// on mesure le texte sur le fond mélangé à la teinte du grain, là où passe une ligne.
+const mix = (bg, ink, alpha) =>
+  '#' +
+  [1, 3, 5]
+    .map((i) => {
+      const b = parseInt(bg.slice(i, i + 2), 16);
+      const c = parseInt(ink.slice(i, i + 2), 16);
+      return Math.round(b * (1 - alpha) + c * alpha)
+        .toString(16)
+        .padStart(2, '0');
+    })
+    .join('');
+for (const [theme, tokens] of Object.entries(themes)) {
+  tokens['bg-grain'] = mix(tokens.bg, tokens['grain-teinte'], Number(tokens['grain-avant']));
+  // Pas d'accent : il n'apparaît qu'à l'époque 3, où le grain est nul. En clair, il
+  // passerait sous 4.5:1 dès 3 % de grain. tests/epoques.spec.ts vérifie qu'aucun texte
+  // n'est affiché en accent en Avant ni en Pendant.
+  for (const fg of ['text', 'text-muted', 'ink-brass']) {
+    pairs[theme].push([fg, 'bg-grain', TEXT, null, 'sur le grain d’Avant']);
+  }
+}
 
 let failures = 0;
 for (const [theme, list] of Object.entries(pairs)) {

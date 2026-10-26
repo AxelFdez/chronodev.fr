@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { site } from '@/content/site';
+import { Menu } from './Menu';
 import { ThemeToggle } from './ThemeToggle';
 import styles from './TopBar.module.css';
 
@@ -11,7 +12,10 @@ export function TopBar() {
         <Link href="/" className={styles.brand}>
           {site.nom}
         </Link>
-        <ThemeToggle />
+        <div className={styles.actions}>
+          <Menu />
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

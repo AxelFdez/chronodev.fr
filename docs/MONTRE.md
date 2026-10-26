@@ -14,7 +14,9 @@ sauf une exception documentée plus bas.
 - couleurs en variables par thème ;
 - ids préfixés `w-`.
 
-Les états 1, 2 et 3 passent par `data-etat` sur le `<svg>`. Les noms `#l1`, `#l2`,
+Les états 1, 2 et 3 passent par `data-etat` sur le `<svg>`. Depuis la tranche 3, l'état
+suit le radio coché de la section des époques (Avant = 1, Pendant = 2, Après = 3). Sans
+JavaScript, la montre reste à l'état 3. Les noms `#l1`, `#l2`,
 `#hands-central`… de ce document désignent les parties du dessin, pas des sélecteurs
 du code.
 

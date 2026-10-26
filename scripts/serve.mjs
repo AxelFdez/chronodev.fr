@@ -20,7 +20,9 @@ const TYPES = {
 const COMPRESSIBLE = new Set(['.html', '.css', '.js', '.json', '.txt', '.xml', '.svg']);
 const root = path.resolve(OUT_DIR);
 const cspFile = `${CSP_DIR}/policy.txt`;
-const csp = existsSync(cspFile) ? readFileSync(cspFile, 'utf8') : null;
+// Relue à chaque requête : un serveur resté ouvert ne doit jamais servir la CSP d'un ancien
+// build (les hashes des scripts inline changent à chaque build).
+const readCsp = () => (existsSync(cspFile) ? readFileSync(cspFile, 'utf8') : null);
 
 function headers(ext, urlPath) {
   const h = {
@@ -33,6 +35,7 @@ function headers(ext, urlPath) {
       ? 'public, max-age=31536000, immutable'
       : 'no-cache',
   };
+  const csp = readCsp();
   if (csp) h['Content-Security-Policy'] = csp;
   if (process.env.ROBOTS_TAG) h['X-Robots-Tag'] = process.env.ROBOTS_TAG;
   return h;
@@ -70,5 +73,7 @@ createServer((req, res) => {
   }
   send(req, res, 404, path.join(root, '404.html'), urlPath);
 }).listen(PORT, '127.0.0.1', () => {
-  console.log(`out/ servi sur http://127.0.0.1:${PORT}${csp ? ' (avec CSP)' : ' (sans CSP)'}`);
+  console.log(
+    `out/ servi sur http://127.0.0.1:${PORT}${readCsp() ? ' (avec CSP)' : ' (sans CSP)'}`,
+  );
 });

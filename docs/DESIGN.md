@@ -149,6 +149,19 @@ le fond, sous le contenu. L'opacité porte la progression des époques :
 En thème clair, l'opacité et la teinte du grain sont à régler à part : un grain laiton
 clair sur papier clair ne se voit pas. Prévois un réglage par époque **et** par thème.
 
+Réglage retenu (tranche 3, `styles/tokens.css`) :
+
+| Thème | Teinte | Avant | Pendant | Après |
+|---|---|---|---|---|
+| Sombre | `--brass-light` | 4,5 % | 2,2 % | 0 |
+| Clair | `--text` #16181C | 6 % | 3 % | 0 |
+
+Le texte posé sur le grain le plus dense reste au-dessus de 4.5:1 (mesuré par
+`npm run check:contrast`), **sauf l'accent en thème clair**. Celui-ci tombe à 4.20:1 sur
+le grain d'Avant, et sous 4.5:1 dès 3 % de grain. D'où la règle : **aucun texte en accent
+en Avant ni en Pendant**. Elle découle déjà de « l'accent arrive à l'époque 3 », et un
+test la vérifie.
+
 ## Motion
 
 | Usage | Durée | Easing (GSAP) |

@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { hydrated, storeTheme } from './helpers';
+import { comparerCaptures, hydrated, storeTheme } from './helpers';
 
 // Tranche 2 : hero de conversion, montre statique corrigée, contact, mentions légales.
 
@@ -33,7 +33,10 @@ test.describe('HTML servi (vérification 6)', () => {
 
 test('le CTA mène au contact', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('link', { name: 'Parlons de votre projet' }).click();
+  await page
+    .getByRole('region', { name: 'Le temps ne joue plus contre vous.' })
+    .getByRole('link', { name: 'Parlons de votre projet' })
+    .click();
   await expect(page).toHaveURL(/#contact$/);
   await expect(page.getByRole('heading', { name: 'Contact' })).toBeInViewport();
 });
@@ -170,7 +173,12 @@ for (const [nom, viewport] of [
       await context.close();
       return image;
     };
-    expect((await capture(true)).equals(await capture(false))).toBe(true);
+    const { pixelsDifferents } = await comparerCaptures(
+      browser,
+      await capture(true),
+      await capture(false),
+    );
+    expect(pixelsDifferents).toBe(0);
   });
 }
 

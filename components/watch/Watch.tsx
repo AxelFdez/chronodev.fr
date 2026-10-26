@@ -1,3 +1,7 @@
+'use client';
+
+import { useRef, useSyncExternalStore } from 'react';
+import { EPOQUES } from '@/content/epoques';
 import styles from './Watch.module.css';
 
 /**
@@ -10,9 +14,37 @@ import styles from './Watch.module.css';
  * cadran, graduations, sous-cadran (l2), jour/nuit (l3), aiguilles h/m, trotteuse, axe.
  * Les états 1 → 3 ne changent que des opacités et des couleurs (CSS), plus la migration
  * des aiguilles h/m vers le sous-cadran (attribut transform).
+ *
+ * L'état suit l'époque cochée dans la section des époques (le groupe radio fait foi).
+ * La couronne est la molette : la glisser au pointeur change d'époque. Sans JavaScript,
+ * la montre reste à l'état 3, quelle que soit l'époque affichée.
  */
 
 export type Etat = 1 | 2 | 3;
+
+// --- Lien avec le groupe radio des époques ---
+
+const radioCochee = () =>
+  document.querySelector<HTMLInputElement>('input[name="epoque"]:checked')?.value;
+
+function subscribe(onChange: () => void) {
+  document.addEventListener('change', onChange);
+  return () => document.removeEventListener('change', onChange);
+}
+const getEtat = (): Etat => EPOQUES.find((e) => e.id === radioCochee())?.etat ?? 3;
+const getEtatServeur = (): Etat => 3; // Après, l'époque par défaut
+
+/** Coche l'époque d'indice `index`, comme le ferait un clic sur son onglet. */
+function choisirEpoque(index: number) {
+  const id = EPOQUES[Math.max(0, Math.min(EPOQUES.length - 1, index))].id;
+  const input = document.querySelector<HTMLInputElement>(`input[name="epoque"][value="${id}"]`);
+  if (!input || input.checked) return;
+  input.checked = true;
+  input.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+// Glisser la couronne : 40 px vers la droite avancent d'une époque, vers la gauche reculent.
+const PAS_DE_GLISSER = 40;
 
 // Repère (MONTRE.md § Repère) : centre du boîtier, chemin de fer, sous-cadran de 6 h.
 const CX = 190;
@@ -46,7 +78,10 @@ const MIGRATION = 'matrix(0.35 0 0 0.35 123.5 250.5)';
 // Les angles sont cohérents entre eux, et la trotteuse tombe sur une graduation.
 const POSE = { heures: 42.5, minutes: 150, secondes: 18 };
 
-export function Watch({ etat = 3 }: { etat?: Etat }) {
+export function Watch() {
+  const etat = useSyncExternalStore(subscribe, getEtat, getEtatServeur);
+  const glisser = useRef<{ x: number; depart: number } | null>(null);
+
   return (
     <svg
       className={styles.watch}
@@ -309,6 +344,30 @@ export function Watch({ etat = 3 }: { etat?: Etat }) {
         transform={`rotate(${POSE.secondes} 190 290)`}
       />
       <circle className={`${styles.l2} ${styles.cap}`} cx="190" cy="290" r="7" />
+
+      {/* Zone de prise de la couronne (anneau, couronne, tige), plus large que le dessin.
+          Pointeur fin seulement : au pouce, c'est trop imprécis (BRIEF.md), les onglets
+          suffisent. Le clavier passe par le groupe radio : rien ici n'est focalisable. */}
+      <rect
+        className={styles.couronne}
+        data-part="couronne"
+        x="150"
+        y="41"
+        width="80"
+        height="128"
+        fill="transparent"
+        onPointerDown={(e) => {
+          e.currentTarget.setPointerCapture(e.pointerId);
+          glisser.current = { x: e.clientX, depart: etat - 1 };
+        }}
+        onPointerMove={(e) => {
+          if (!glisser.current) return;
+          const pas = Math.round((e.clientX - glisser.current.x) / PAS_DE_GLISSER);
+          choisirEpoque(glisser.current.depart + pas);
+        }}
+        onPointerUp={() => (glisser.current = null)}
+        onPointerCancel={() => (glisser.current = null)}
+      />
     </svg>
   );
 }

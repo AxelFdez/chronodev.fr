@@ -24,6 +24,12 @@
   transition: color var(--dur-micro) var(--ease-power2-out);
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .brand:hover {
   color: var(--accent);
 }

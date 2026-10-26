@@ -106,7 +106,7 @@ que couvrait WebGL. Garder la règle « pas de WebGL sans décision ».
 veille** (appliqué dans ce plan). Sinon, une session qui lit les deux fichiers hésitera, ou
 remettra une aiguille.
 
-### C8 — Jusqu'où va une époque ? → Axel
+### C8 — Jusqu'où va une époque ? · ✓ réglé (proposition acceptée)
 - `BRIEF.md` : « L'esthétique entière change d'une époque à l'autre. »
 - Si « entière » veut dire toute la page, passer à Avant recouvre aussi le hero et la barre
   du haut : grain de 4,5 % sous le CTA. Et puisque le contact est « dans Après »,
@@ -116,7 +116,7 @@ Proposition : l'époque gouverne le contenu de la section des époques, l'état 
 et le grain (calque pleine page). Le hero (accroche, sous-titre, CTA, contact) et la barre du
 haut ne changent pas. Le contact est toujours dans le hero, et détaillé dans Après.
 
-### C9 — La couronne est à la fois menu et molette → Axel
+### C9 — La couronne est à la fois menu et molette · ✓ réglé (proposition acceptée)
 - `BRIEF.md` : « la couronne devient une molette de temps (draggable) » **et** « couronne =
   menu ». `CLAUDE.md` : « entrée en mots dans le menu de la couronne ».
 - Un même contrôle avec deux gestes crée trois ambiguïtés. Au pointeur : un glisser court
@@ -298,7 +298,7 @@ depuis `etat`, pas une transformation CSS. C'est ce qui évite la question S10 (
 CSS sur un `viewBox` décalé). Sans JS, la montre reste donc à l'état 3, quel que soit
 l'onglet coché.
 
-### T3 — Molette sans animation
+### T3 — Molette sans animation · ✓ livrée
 Contenu :
 - Groupe radio Avant / Pendant / Après, Après par défaut.
 - Contenu HTML complet des trois époques, tiré de `BRIEF.md`. Offres en placeholders.
@@ -315,6 +315,24 @@ Vérification de fin :
 - Sans JS, les radios changent bien de panneau.
 - axe sur 3 époques × 2 thèmes.
 - Le grain se voit en thème clair (écart mesuré entre captures avec et sans grain).
+
+Livré en plus :
+- **Montre collante sur desktop** : elle reste visible pendant qu'on parcourt les
+  époques, puisque leur choix la transforme. Sur mobile, elle reste dans le flux, sous le
+  hero.
+- **Bouton « Menu »** (C9) : un `<details>` natif, qui s'ouvre aussi sans JS. Il contient
+  des liens et l'entrée de thème en mots ; Échap et un clic à l'extérieur le ferment.
+- **Aucun texte en accent en Avant ni en Pendant** : c'est vérifié par un test. Sur le
+  grain clair, l'accent passerait sous 4.5:1 (`DESIGN.md` § Grain).
+- **Rechargement : retour à Après.** Les radios portent `autocomplete="off"`, pour que le
+  navigateur ne restaure pas l'époque précédente.
+
+Tests de garde vérifiés par mutation (grain clair à zéro, trotteuse en accent à l'état 2) :
+ils échouent.
+
+Pour la tranche 4 : l'état de la montre se lit sur le radio coché, via `useSyncExternalStore`
+dans `Watch.tsx`. La timeline GSAP jouera les passages d'état ; le changement instantané
+reste la règle sous reduced-motion.
 
 ### T4 — Montre animée
 Contenu :

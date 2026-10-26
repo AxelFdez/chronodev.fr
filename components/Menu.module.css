@@ -1,0 +1,77 @@
+.menu {
+  position: relative;
+}
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 18px;
+  border: 1px solid var(--border);
+  border-radius: 23px;
+  font-weight: 500;
+  list-style: none;
+  cursor: pointer;
+  transition: border-color var(--dur-micro) var(--ease-power2-out);
+}
+
+.bouton::-webkit-details-marker {
+  display: none;
+}
+
+.bouton:hover,
+.menu[open] .bouton {
+  border-color: var(--text-muted);
+}
+
+.panneau {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  min-inline-size: 240px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.25);
+}
+
+.panneau ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.panneau a,
+.panneau button {
+  display: flex;
+  align-items: center;
+  inline-size: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.panneau a:hover,
+.panneau button:hover {
+  background: var(--bg);
+}
+
+.theme {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+/* Sans JavaScript, la bascule de thème ne peut rien faire. */
+:global(:root:not([data-js])) .theme {
+  display: none;
+}

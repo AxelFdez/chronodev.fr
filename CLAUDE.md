@@ -35,7 +35,7 @@ et `docs/BRIEF.md` (contenu et positionnement) avant d'écrire du code.
   ne les recalcule pas à l'estime, et ne substitue pas une teinte sans la remesurer.
 - Vrais éléments : `<button>`, `<a href>`, `<input>` + `<label>`. Jamais `role` ou
   `onClick` sur un `div`.
-- `aria-label` sur tout bouton sans libellé visible (le poussoir de thème, la couronne).
+- `aria-label` sur tout bouton sans libellé visible (le poussoir de thème).
 - Cibles tactiles ≥ 44 px, avec au moins 8 px entre deux cibles adjacentes.
 - Tout SVG décoratif porte `aria-hidden="true"` ; tout SVG porteur de sens porte
   `role="img"` et un `aria-label`.
@@ -48,11 +48,13 @@ et `docs/BRIEF.md` (contenu et positionnement) avant d'écrire du code.
 | Intro | Joue l'assemblage **1 → 2 seulement**, 2 s au plus. Voir `docs/MONTRE.md` § Budget. |
 | Rendu | **Pas de three.js, pas de WebGL.** La montre et l'intro sont en SVG + GSAP. |
 | Époques | Le projet **du client** : avant / pendant / après. Pas le CV d'Axel. |
-| Molette | Position par défaut au chargement : **Après**. |
+| Molette | Position par défaut au chargement : **Après**. La **couronne de la montre** est la molette (glisser, desktop) ; le groupe radio Avant / Pendant / Après en est le contrôle clavier et, sur mobile, les onglets. |
+| Menu | Un vrai bouton **« Menu »** dans la barre du haut, distinct de la couronne. |
+| Portée d'une époque | L'époque change la section des époques, l'état de la montre et le grain (pleine page). Le hero, la barre du haut et le contact ne changent pas. |
 | Thème | **Sombre par défaut**, `prefers-color-scheme` ignoré au premier chargement. Clair accessible par toggle. |
 | Accent sombre | Cyan `#3FE0F0`. |
 | Accent clair | Brique `#B84A3B`, accent unique du thème clair. |
-| Toggle | Second poussoir du chronographe, en capsule 54×46, dans la **barre du haut, unique**, commune à l'intro et au hero. Doublé d'une entrée en mots dans le menu de la couronne. |
+| Toggle | Second poussoir du chronographe, en capsule 54×46, dans la **barre du haut, unique**, commune à l'intro et au hero. Doublé d'une entrée en mots dans le menu. |
 | Typographie | Space Grotesk + JetBrains Mono. Deux familles, pas de serif. |
 | Montre | Régulateur sur boîtier travaillé. Un seul sous-cadran, à 6 h. Secondes au centre. |
 | Construction | La montre gagne des calques d'une époque à l'autre. Voir `docs/MONTRE.md`. |
@@ -78,7 +80,7 @@ et `docs/BRIEF.md` (contenu et positionnement) avant d'écrire du code.
 - `npm run build` : export statique dans `out/`, puis calcul de la CSP (`build/csp/`).
 - `npm run serve` : sert `out/` comme nginx en production (en-têtes, CSP, gzip).
 - `npm run verify` : lint, build, types, contrastes, valeurs manquantes, tests Playwright
-  (dont axe), Lighthouse mobile. Les captures vont dans `artifacts/screens/` : les **lire**
+  (dont axe), Lighthouse mobile (médiane de 5 passages). Les captures vont dans `artifacts/screens/` : les **lire**
   avant de déclarer une tâche terminée. Le test sur un vrai téléphone reste manuel.
 - Déploiement : `docs/DEPLOIEMENT.md`.
 

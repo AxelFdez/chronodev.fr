@@ -39,6 +39,21 @@
   --ink-brass: var(--brass);
 }
 
+/* Grain par époque et par thème (docs/DESIGN.md § Grain). Après : aucun grain.
+ * En clair, un grain laiton ne se voit pas sur le papier : encre sombre, dosée à part. */
+:root,
+:root[data-theme='dark'] {
+  --grain-teinte: var(--brass-light);
+  --grain-avant: 0.045;
+  --grain-pendant: 0.022;
+}
+
+:root[data-theme='light'] {
+  --grain-teinte: var(--text);
+  --grain-avant: 0.06;
+  --grain-pendant: 0.03;
+}
+
 /* Motion — docs/DESIGN.md § Motion. Équivalents CSS des easings GSAP. */
 :root {
   --ease-power2-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);

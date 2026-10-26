@@ -1,12 +1,38 @@
-.hero {
+/* --- Grain : lignes horizontales, par-dessus le fond, sous le contenu --- */
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  background: repeating-linear-gradient(to bottom, var(--grain-teinte) 0 1px, transparent 1px 3px);
+}
+
+:global(:root:has(input[name='epoque'][value='avant']:checked)) .grain {
+  opacity: var(--grain-avant);
+}
+
+:global(:root:has(input[name='epoque'][value='pendant']:checked)) .grain {
+  opacity: var(--grain-pendant);
+}
+
+/* --- Scène : hero, montre, époques --- */
+
+.scene {
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 16px 56px;
   display: grid;
+  grid-template-areas:
+    'hero'
+    'montre'
+    'epoques';
   gap: 40px;
 }
 
-.texte {
+.hero {
+  grid-area: hero;
   display: grid;
   gap: 20px;
   justify-items: start;
@@ -59,9 +85,18 @@
 }
 
 .montre {
+  grid-area: montre;
   justify-self: center;
   inline-size: min(240px, 64vw);
 }
+
+.zoneEpoques {
+  grid-area: epoques;
+  padding-top: 48px;
+  border-top: 1px solid var(--border);
+}
+
+/* --- Contact --- */
 
 .contact {
   max-width: 1200px;
@@ -99,15 +134,24 @@
 }
 
 @media (min-width: 900px) {
-  .hero {
+  .scene {
     grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
-    align-items: center;
-    gap: 64px;
+    grid-template-areas:
+      'hero montre'
+      'epoques montre';
+    column-gap: 64px;
+    row-gap: 96px;
     padding: 96px 32px;
   }
 
   .montre {
     inline-size: 100%;
+    align-self: stretch;
+  }
+
+  .montreCollante {
+    position: sticky;
+    top: 32px;
   }
 
   .contact {
