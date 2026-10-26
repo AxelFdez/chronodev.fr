@@ -264,7 +264,7 @@ Vérification de fin :
 - Un script recalcule les ratios de contraste depuis `tokens.css` et échoue sous 4.5:1.
 - L'image Docker se construit et sert `/` (HTTP 200).
 
-### T2 — Hero de conversion et montre statique corrigée
+### T2 — Hero de conversion et montre statique corrigée · ✓ livrée (mise en ligne : Axel)
 Contenu :
 - Accroche, sous-titre (piste provisoire, marquée comme telle), CTA vers `#contact`, bloc
   contact avec `[EMAIL]` et `[TELEPHONE]`.
@@ -283,6 +283,20 @@ Vérification de fin :
   - le reflet reste dans r ≤ 130.
 - Revue des captures : la montre est latérale et moins contrastée que l'accroche.
 - Test sur un vrai téléphone via l'URL d'aperçu.
+
+Livré en plus :
+- surtitre « Axel · développeur indépendant · Nice » et ligne « pour qui » ;
+- pied de page avec le lien vers les mentions légales ;
+- valeurs manquantes affichées en texte, sans lien `mailto:` cassé.
+
+Les tests SVG ont été vérifiés par mutation : on réintroduit les défauts d'origine, et
+ils échouent. JetBrains Mono n'est pas préchargée : c'est mesuré, voir `DESIGN.md`
+§ Typographie.
+
+Pour la tranche 3 : la migration des aiguilles est un **attribut** `transform` calculé
+depuis `etat`, pas une transformation CSS. C'est ce qui évite la question S10 (origine
+CSS sur un `viewBox` décalé). Sans JS, la montre reste donc à l'état 3, quel que soit
+l'onglet coché.
 
 ### T3 — Molette sans animation
 Contenu :
@@ -319,7 +333,8 @@ Vérification de fin :
 ### T5 — Intro
 Contenu : assemblage 1 → 2 seulement, une seule fois, sautable (bouton, lien, Échap), 2 s
 au plus, poussoir actif au premier frame, passage de la montre dans le hero par Flip. Le
-passage 2 → 3 attend la réponse à C2.
+passage 2 → 3 attend la réponse à C2. Ajouter le drapeau `chronodev-intro-vue` à la
+section « Données personnelles » des mentions légales.
 
 Vérification de fin :
 - Deuxième visite : pas d'intro.

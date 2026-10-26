@@ -26,10 +26,15 @@ for (const [name, viewport] of Object.entries(viewports)) {
       });
       const page = await context.newPage();
       if (js) await storeTheme(page, theme);
-      await page.goto('/');
-      if (js) await hydrated(page);
-      await page.evaluate(() => document.fonts.ready);
-      await page.screenshot({ path: `artifacts/screens/${id}.png`, fullPage: true });
+      for (const [chemin, nom] of [
+        ['/', 'accueil'],
+        ['/mentions-legales/', 'mentions'],
+      ]) {
+        await page.goto(chemin);
+        if (js) await hydrated(page);
+        await page.evaluate(() => document.fonts.ready);
+        await page.screenshot({ path: `artifacts/screens/${nom}-${id}.png`, fullPage: true });
+      }
       await context.close();
     });
   }

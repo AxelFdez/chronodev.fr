@@ -61,6 +61,10 @@ et `docs/BRIEF.md` (contenu et positionnement) avant d'écrire du code.
 
 - Les offres réelles affichées dans « Après » : noms, contenus, prix.
 - L'email et le téléphone de contact.
+- Les valeurs des mentions légales : nom, adresse, SIRET, hébergeur, durée de
+  conservation des journaux (`content/site.ts`).
+- Le libellé du CTA (« Parlons de votre projet ») et la ligne « pour qui », proposés en
+  tranche 2.
 - **La preuve client.** Le site n'a aujourd'hui aucun témoignage, aucun projet livré,
   aucun chiffre avant/après. Le module « Dernière veille » prouve qu'Axel suit
   l'actualité, pas qu'il livre. C'est le manque le plus coûteux du projet.

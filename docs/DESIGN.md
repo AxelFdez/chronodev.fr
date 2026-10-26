@@ -128,8 +128,9 @@ en thème clair, avant le chargement de React.
   `--font-mono` sur `<html>`. Les deux familles sont variables : un seul fichier chacune.
   Les graisses listées plus haut sont celles qu'on utilise, pas des fichiers à charger.
 - Préchargement : Space Grotesk seulement, puisqu'elle porte le `h1` du hero. JetBrains
-  Mono en `preload: false`, sauf si un texte mono apparaît au-dessus de la ligne de
-  flottaison.
+  Mono en `preload: false`, **même** pour le surtitre mono du hero : mesuré en tranche 2,
+  la précharger retarde l'accroche (LCP de 1,8 à 2,5 s, Lighthouse de 98 à 95). Le
+  surtitre s'affiche d'abord dans la police de repli, sans décalage (CLS 0).
 - Repli : `next/font` génère une police de repli aux métriques ajustées
   (`adjustFontFallback`) pour limiter le décalage au chargement. Pile déclarée derrière :
   `'Helvetica Neue', Arial, sans-serif` et `ui-monospace, monospace`.

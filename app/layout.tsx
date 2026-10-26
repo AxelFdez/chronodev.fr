@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { JetBrains_Mono, Space_Grotesk } from 'next/font/google';
+import { Footer } from '@/components/Footer';
 import { TopBar } from '@/components/TopBar';
 import { site } from '@/content/site';
 import { HEAD_SCRIPT } from '@/lib/html-state';
@@ -17,6 +18,8 @@ const mono = JetBrains_Mono({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-mono',
+  // Non préchargée, bien que le surtitre du hero soit en mono : mesuré en tranche 2, le
+  // préchargement retarde l'accroche (LCP 1,8 → 2,5 s, Lighthouse 98 → 95).
   preload: false,
   fallback: ['ui-monospace', 'monospace'],
 });
@@ -42,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <TopBar />
         {children}
+        <Footer />
       </body>
     </html>
   );

@@ -7,6 +7,7 @@ import lighthouse from 'lighthouse';
 import { BASE_URL, withServer } from './lib.mjs';
 
 const BUDGET = { performance: 0.95, accessibility: 1, 'best-practices': 1, seo: 1 };
+const TIMEOUT_MS = 120_000; // un Chrome bloqué fait échouer la vérification, pas l'attendre
 
 await withServer(async () => {
   const chrome = await chromeLauncher.launch({
@@ -14,11 +15,18 @@ await withServer(async () => {
     chromeFlags: ['--headless=new', '--no-sandbox'],
   });
   try {
-    const { lhr, report } = await lighthouse(`${BASE_URL}/`, {
+    const run = lighthouse(`${BASE_URL}/`, {
       port: chrome.port,
       output: 'html',
       logLevel: 'error',
     });
+    const timeout = new Promise((_, reject) =>
+      setTimeout(
+        () => reject(new Error(`Lighthouse bloqué après ${TIMEOUT_MS / 1000} s`)),
+        TIMEOUT_MS,
+      ).unref(),
+    );
+    const { lhr, report } = await Promise.race([run, timeout]);
     await mkdir('artifacts/lighthouse', { recursive: true });
     await writeFile('artifacts/lighthouse/mobile.html', report);
 

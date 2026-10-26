@@ -8,9 +8,23 @@ const themes = {};
 for (const [, selector, body] of css.matchAll(/(:root[^{]*)\{([^}]*)\}/g)) {
   const name = selector.includes("'light'") ? 'light' : selector.includes("'dark'") ? 'dark' : null;
   if (!name) continue;
-  themes[name] = Object.fromEntries(
-    [...body.matchAll(/--([\w-]+):\s*(#[0-9a-f]{6})/gi)].map(([, k, v]) => [k, v]),
-  );
+  // Plusieurs blocs par thème (couleurs, puis rôles) : on les fusionne.
+  themes[name] = {
+    ...themes[name],
+    ...Object.fromEntries(
+      [...body.matchAll(/--([\w-]+):\s*(#[0-9a-f]{6}|var\(--[\w-]+\))/gi)].map(([, k, v]) => [
+        k,
+        v,
+      ]),
+    ),
+  };
+}
+// Les rôles (--ink-brass: var(--brass-light)) pointent vers une couleur du même thème.
+for (const tokens of Object.values(themes)) {
+  for (const [k, v] of Object.entries(tokens)) {
+    const ref = v.match(/^var\(--([\w-]+)\)$/);
+    if (ref) tokens[k] = tokens[ref[1]];
+  }
 }
 
 const lum = (hex) => {
@@ -41,6 +55,7 @@ const pairs = {
     ['brass-light', 'surface', TEXT, null, 'surtitres'],
     ['brass', 'bg', TEXT, 6.19, 'titrage, filets'],
     ['brass', 'surface', TEXT, null, 'titrage, filets'],
+    ['ink-brass', 'bg', TEXT, null, 'surtitre du hero (rôle)'],
     ['accent', 'bg', UI, null, 'anneau de focus'],
     ['brass', 'bg', UI, null, 'capsule du poussoir sur le fond'],
     ['bg', 'brass', UI, null, 'pictogramme sur le poussoir'],
@@ -56,6 +71,7 @@ const pairs = {
     ['brass', 'bg', TEXT, 5.82, 'surtitres, filets'],
     ['brass', 'surface', TEXT, null, 'surtitres, filets'],
     ['text', 'brass-light', TEXT, 7.33, 'encre sur aplat laiton'],
+    ['ink-brass', 'bg', TEXT, null, 'surtitre du hero (rôle)'],
     ['accent', 'bg', UI, null, 'anneau de focus'],
     ['brass', 'bg', UI, null, 'bord du poussoir sur le fond'],
     ['text', 'brass-light', UI, null, 'pictogramme sur le poussoir'],

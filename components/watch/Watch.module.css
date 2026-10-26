@@ -1,0 +1,133 @@
+/*
+ * Couleurs de la montre par thème (docs/MONTRE.md § Montre et thème clair) et par état.
+ * Le boîtier laiton garde ses teintes dans les deux thèmes ; changent le cadran, les
+ * graduations, les sous-cadrans, les aiguilles et l'accent.
+ */
+.watch {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+
+  --w-dial: var(--surface);
+  --w-tick-major-1: #3a4049;
+  --w-tick-major: #454c57;
+  --w-tick-minor: #3a4049;
+  --w-sub-face: #0f1318;
+  --w-sub-ring: #2e343d;
+  --w-sub-inner: #1f252d;
+  --w-sub-tick: #454c57;
+  --w-sub-tick-minor: #2e343d;
+  --w-hand-hour: #b8893b;
+  --w-hand-minute: #d9b26a;
+  --w-seconds-2: #d9b26a; /* laiton à l'état 2 : aucun pixel d'accent avant l'état 3 */
+}
+
+:global(:root[data-theme='light']) .watch {
+  --w-tick-major-1: #cec8bb;
+  --w-tick-major: #b8b2a4;
+  --w-tick-minor: #cec8bb;
+  --w-sub-face: var(--bg);
+  --w-sub-ring: var(--border);
+  --w-sub-inner: #ece8df;
+  --w-sub-tick: #b8b2a4;
+  --w-sub-tick-minor: var(--border);
+  --w-hand-hour: var(--brass);
+  --w-hand-minute: #b8893b;
+  --w-seconds-2: #b8893b;
+  /* Le reflet n'a pas d'équivalent sur fond clair : une ombre portée douce le remplace. */
+  filter: drop-shadow(0 14px 22px rgb(22 24 28 / 0.16));
+}
+
+:global(:root[data-theme='light']) .specular {
+  display: none;
+}
+
+.dial {
+  fill: var(--w-dial);
+}
+
+.ticksMajor {
+  stroke: var(--w-tick-major);
+}
+
+.ticksMinor {
+  stroke: var(--w-tick-minor);
+}
+
+.subdialFace {
+  fill: var(--w-sub-face);
+  stroke: var(--w-sub-ring);
+}
+
+.subdialInner {
+  stroke: var(--w-sub-inner);
+}
+
+.subdialTicks {
+  stroke: var(--w-sub-tick);
+}
+
+.subdialTicksMinor {
+  stroke: var(--w-sub-tick-minor);
+}
+
+.daynightFace {
+  fill: var(--w-sub-face);
+  stroke: var(--w-sub-ring);
+}
+
+.daynightLine {
+  stroke: var(--w-sub-ring);
+}
+
+.daynightHollow {
+  stroke: var(--w-sub-tick);
+}
+
+.accentFill {
+  fill: var(--accent);
+}
+
+.hourHand {
+  stroke: var(--w-hand-hour);
+}
+
+.minuteHand {
+  stroke: var(--w-hand-minute);
+}
+
+.handsCap {
+  fill: var(--w-hand-hour);
+}
+
+.seconds {
+  stroke: var(--accent);
+}
+
+.cap {
+  fill: var(--accent);
+}
+
+/* --- États (MONTRE.md § Les trois calques) --- */
+
+.watch[data-etat='1'] .l2,
+.watch[data-etat='1'] .l3,
+.watch[data-etat='2'] .l3 {
+  opacity: 0;
+}
+
+.watch[data-etat='1'] .ticksMajor {
+  stroke: var(--w-tick-major-1);
+}
+
+.watch:not([data-etat='1']) .tick180 {
+  opacity: 0;
+}
+
+.watch[data-etat='2'] .seconds {
+  stroke: var(--w-seconds-2);
+}
+
+.watch[data-etat='2'] .cap {
+  fill: var(--w-seconds-2);
+}

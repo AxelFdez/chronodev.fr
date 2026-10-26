@@ -4,6 +4,20 @@ L'asset est `assets/montre.svg`. Il contient **les trois états en calques super
 pas trois dessins. Chaque époque révèle un calque ; rien ne change de coordonnées,
 sauf une exception documentée plus bas.
 
+**Implémentation (depuis la tranche 2) : `components/watch/Watch.tsx` fait foi.**
+`assets/montre.svg` reste la référence du dessin d'origine, avec ses défauts (voir
+`PLAN.md` § 2). Le composant les corrige :
+- calques réordonnés : les aiguilles h/m et la trotteuse sont au-dessus du cadran,
+  du sous-cadran et du jour/nuit ;
+- reflet ramené dans le boîtier ;
+- aiguilles dessinées à 0° ;
+- couleurs en variables par thème ;
+- ids préfixés `w-`.
+
+Les états 1, 2 et 3 passent par `data-etat` sur le `<svg>`. Les noms `#l1`, `#l2`,
+`#hands-central`… de ce document désignent les parties du dessin, pas des sélecteurs
+du code.
+
 Type retenu : **régulateur sur boîtier travaillé**. Les secondes occupent le centre,
 les heures et les minutes sont reléguées dans un sous-cadran à 6 h.
 
@@ -72,7 +86,8 @@ de toute l'animation** — soigne-le, le reste n'est qu'une apparition d'opacit�
 gsap.to('#hands-central', {
   y: 62,                        // (190,290) -> (190,352)
   scale: 0.35,
-  transformOrigin: '190px 290px',
+  svgOrigin: '190 290',         // PAS transformOrigin : sur un SVG, GSAP le rapporte à la
+                                // boîte de l'élément, et les aiguilles sortent du cadre (S3)
   duration: 1.0,
   ease: 'power3.inOut'
 });

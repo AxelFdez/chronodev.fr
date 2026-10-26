@@ -29,6 +29,16 @@
   color-scheme: light;
 }
 
+/* Rôles. Le laiton n'est une encre qu'en sombre (--brass-light) ; en clair, --brass. */
+:root,
+:root[data-theme='dark'] {
+  --ink-brass: var(--brass-light);
+}
+
+:root[data-theme='light'] {
+  --ink-brass: var(--brass);
+}
+
 /* Motion — docs/DESIGN.md § Motion. Équivalents CSS des easings GSAP. */
 :root {
   --ease-power2-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
