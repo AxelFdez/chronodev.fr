@@ -1,0 +1,154 @@
+# DESIGN — chronodev.fr (v1)
+
+Direction : laiton + cyan électrique en sombre, laiton + brique en clair.
+Tous les ratios ci-dessous sont **mesurés**, pas estimés.
+
+## Règle d'usage
+
+Le risque de cette direction est le cliché steampunk-cyber. Garde-fous :
+
+- **Laiton** : matière et filets. Boîtier, couronne, poussoir, surtitres, séparateurs.
+  Jamais un aplat de pleine largeur. Porté par le **hero et la montre**, vus par tout
+  le monde — pas par l'époque 1, que la molette ne montre plus par défaut.
+- **Accent** : seul accent du site. Interaction (survol, focus, état actif), données
+  en direct, époque 3. Un seul accent par thème.
+- Le reste est neutre. C'est ce qui rend le site lisible et professionnel.
+
+Répartition visée sur l'ensemble du site : **neutre ~76 %, laiton ~16 %, accent ~8 %**.
+
+## Tokens
+
+Deux jeux de valeurs sur un seul jeu de tokens. L'accent et le laiton **changent de
+valeur selon le thème** : ce ne sont pas des tokens uniques.
+
+```css
+:root,
+:root[data-theme="dark"] {
+  --bg:          #0B0D10;
+  --surface:     #12161B;
+  --border:      #262B33;
+  --text:        #E8E6E1;
+  --text-muted:  #8A8F98;
+  --brass:       #B8893B;  /* encre ET matière en sombre */
+  --brass-light: #D9B26A;
+  --accent:      #3FE0F0;
+  --accent-ink:  #0B0D10;  /* texte posé sur --accent */
+}
+
+:root[data-theme="light"] {
+  --bg:          #F6F5F2;
+  --surface:     #FFFFFF;
+  --border:      #DDD7CA;
+  --text:        #16181C;
+  --text-muted:  #5E636B;
+  --brass:       #7A5A1E;  /* encre uniquement */
+  --brass-light: #C9A05A;  /* matière uniquement, jamais du texte */
+  --accent:      #B84A3B;
+  --accent-ink:  #FFFFFF;  /* texte posé sur --accent */
+}
+```
+
+### Contrastes mesurés
+
+**Thème sombre, sur `--bg` #0B0D10**
+
+| Couleur | Ratio | Usage |
+|---|---|---|
+| `--text` #E8E6E1 | 15.60:1 | tout texte |
+| `--text-muted` #8A8F98 | 5.99:1 | texte secondaire (5.59:1 sur `--surface`) |
+| `--accent` #3FE0F0 | 12.17:1 | texte, aplats, aiguilles |
+| `--brass-light` #D9B26A | 9.75:1 | surtitres |
+| `--brass` #B8893B | 6.19:1 | **valeur la plus basse de la palette.** Titrage et filets uniquement, à éviter en mono 11 px. |
+
+**Thème clair, sur `--bg` #F6F5F2**
+
+| Couleur | Ratio | Usage |
+|---|---|---|
+| `--text` #16181C | 16.30:1 | tout texte |
+| `--text-muted` #5E636B | 5.55:1 | texte secondaire |
+| `--accent` #B84A3B | 4.72:1 | texte et liens. Blanc dessus : **5.15:1** |
+| `--brass` #7A5A1E | 5.82:1 | surtitres, filets, états |
+| `--brass-light` #C9A05A | — | **aplat uniquement**, avec encre #16181C : 7.33:1 |
+
+### Ce qui ne traverse pas les thèmes
+
+- `#3FE0F0` sur fond clair : **1.47:1**. Inutilisable, en texte comme en fond de bouton.
+- `#B8893B` en texte sur fond clair : **2.88:1**. Le laiton cesse d'être une encre en clair.
+- `#B84A3B` sur fond sombre : **3.78:1**. Échoue AA. Si la brique devait un jour servir
+  en sombre, sa valeur remonte à `#CF5A45` (4.82:1).
+
+### Conséquence sur la narration
+
+En sombre, l'arc des époques va du laiton au cyan : chaud vers froid, « hier » vers
+« demain ». En clair, l'accent brique est chaud comme le laiton : **l'arc de température
+n'existe pas**. En thème clair, la progression des époques doit passer entièrement par
+la valeur et le grain. Ne compte pas sur la couleur pour la raconter.
+
+## Bascule de thème
+
+Sombre par défaut pour tout le monde, `prefers-color-scheme` volontairement ignoré au
+premier chargement. Le choix du visiteur persiste et **doit s'appliquer avant le premier
+paint**, sinon un visiteur en clair reçoit un flash de fond noir à chaque visite :
+
+```html
+<!-- dans <head>, inline, bloquant, avant toute feuille de style -->
+<script>
+  try {
+    var t = localStorage.getItem('chronodev-theme');
+    if (t === 'light') document.documentElement.dataset.theme = 'light';
+  } catch (e) {}
+</script>
+```
+
+Deux drapeaux en stockage local : `chronodev-theme` et `chronodev-intro-vue`.
+Les deux lectures sont enveloppées dans un `try/catch` (navigation privée, stockage bloqué).
+
+## Typographie
+
+- Titrage et texte courant : **Space Grotesk** (400, 500, 600, 700)
+- Données, chrono, timestamps, étiquettes : **JetBrains Mono** (400, 500, 700)
+- Deux familles maximum. **Pas de serif**, décidé : une troisième famille, et un
+  basculement serif vers sans lirait comme un changement de marque, pas de temps.
+  La matière de l'époque 1 vient du laiton et du grain, pas de la typo.
+- Chargement : un seul `<link>` `fonts.googleapis.com/css2` avec `display=swap`.
+  Fallback de métriques proches : `'Helvetica Neue', Arial, sans-serif` et `ui-monospace`.
+
+## Grain
+
+Overlay en `repeating-linear-gradient` horizontal, `pointer-events: none`, par-dessus
+le fond, sous le contenu. L'opacité porte la progression des époques :
+
+| Époque | Opacité du grain |
+|---|---|
+| Avant | 4,5 % |
+| Pendant | 2,2 % |
+| Après | 0 % |
+
+En thème clair, l'opacité et la teinte du grain sont à régler à part : un grain laiton
+clair sur papier clair ne se voit pas. Prévois un réglage par époque **et** par thème.
+
+## Motion
+
+| Usage | Durée | Easing (GSAP) |
+|---|---|---|
+| Micro-interaction (survol, focus) | 150–250 ms | `power2.out` |
+| Appui sur le poussoir | 200 ms enfoncé, 400 ms retour | `back.out(1.7)` |
+| Transition de section | 600–900 ms | `power3.inOut` |
+| Changement d'époque | 1,2–2 s | `power2.inOut` |
+
+Règles :
+- Une seule timeline GSAP pilote la molette ; les époques sont des plages de cette timeline.
+- Le contenu clé (accroche, offres, contact) ne s'anime **jamais** en boucle et reste
+  lisible sans animation.
+- Sous `prefers-reduced-motion` : pas de shader, pas de parallaxe, fondus courts, et
+  toute boucle à l'arrêt (y compris la trotteuse de la montre).
+- L'intro ne dépasse pas **2 s** entre l'appui sur le poussoir et l'affichage du hero.
+  Le poussoir est cliquable au premier frame, sans mise en place préalable.
+  Voir `MONTRE.md` § Budget : l'assemblage complet ne tient pas dans ces 2 s, et il
+  faut trancher ce que l'intro montre.
+
+## Hiérarchie du hero
+
+En cinq secondes, un visiteur doit comprendre : ce que fait Axel, pour qui, comment le
+contacter. **La montre n'est jamais au même niveau que ces trois informations.**
+Elle est latérale, plus basse en contraste, et ne retarde rien.

@@ -1,0 +1,152 @@
+# MONTRE — l'objet central et son animation
+
+L'asset est `assets/montre.svg`. Il contient **les trois états en calques superposés**,
+pas trois dessins. Chaque époque révèle un calque ; rien ne change de coordonnées,
+sauf une exception documentée plus bas.
+
+Type retenu : **régulateur sur boîtier travaillé**. Les secondes occupent le centre,
+les heures et les minutes sont reléguées dans un sous-cadran à 6 h.
+
+## Repère
+
+`viewBox="0 41 380 412"` — déjà recadré sur le dessin, aucune marge fantôme.
+Centre du boîtier : **(190, 290)**. Lunette : r 130. Cadran : r 112.
+Chemin de fer : r 96 à 104 (majeures), r 99 à 104 (fines).
+Sous-cadran des heures : centre (190, 352), r 36.
+Indicateur jour/nuit : centre (190, 228), r 26.
+
+Ne modifie aucune de ces valeurs sans remesurer les collisions : les graduations
+fines de 168° à 192° sont **volontairement absentes** parce qu'elles passaient à moins
+de 2 px du bord du sous-cadran. Une graduation qui frôle un bord lit comme un défaut
+d'alignement, pas comme un choix.
+
+## Les trois calques
+
+### `#l1` — Avant · toujours visible
+
+Boîtier complet mais en **aplat mat** (`#8A6A2E`, carrure `#5A4420`), cadran nu,
+12 graduations ternes (`#ticks-major`, `#3A4049`), deux aiguilles centrales
+(`#hands-central`), aucune seconde.
+
+Fruste, **pas ancienne** : aucun chiffre romain, aucune patine, aucun guillochage.
+C'est la pauvreté du cadran qui dit « avant ». C'est aussi ce qui évite le steampunk
+que le brief exclut — ne cède pas à la tentation d'« enrichir » cet état.
+
+### `#l2` — Pendant · `opacity: 0 → 1`
+
+Redessine la même géométrie avec les dégradés, et ajoute :
+
+- la matière : dégradé `#m-brass`, reflet spéculaire, moletage de carrure, joint d'ouverture
+- `#ticks-minor` : 44 graduations fines, le chemin de fer passe de 12 à 60 divisions
+- `#subdial-hours` : le sous-cadran de 6 h, **sans aiguilles propres**
+- `#hand-seconds` : la trotteuse centrale, en laiton `#D9B26A` à ce stade
+- `#cap-center` : l'axe du chronographe, laiton
+
+Deux tweens de propriété accompagnent ce passage :
+```js
+gsap.to('#ticks-major', { stroke: '#454C57', duration: 0.6 });
+gsap.to('#tick-180',    { opacity: 0, duration: 0.3 });   // masqué par le sous-cadran
+```
+
+### `#l3` — Après · `opacity: 0 → 1`
+
+- `#daynight` : l'indicateur jour/nuit à 12 h — **réel**, piloté par le toggle de thème
+- le filet clair intérieur de lunette
+- et deux recolorations :
+```js
+gsap.to('#hand-seconds', { stroke: '#3FE0F0', duration: 0.8 });
+gsap.to('#cap-center',   { fill:   '#3FE0F0', duration: 0.8 });
+```
+
+**Les états 1 et 2 ne contiennent pas un pixel de cyan.** C'est délibéré : l'arrivée de
+l'accent *est* l'événement du passage 2 → 3, ce qui évite d'ajouter un compteur
+décoratif pour donner de la matière à cette étape. Ne mets pas de cyan plus tôt.
+
+## Le seul moment non additif
+
+Au passage 1 → 2, `#hands-central` quitte le centre et migre dans le sous-cadran en
+rétrécissant. C'est la relégation du régulateur rendue visible, et c'est **le temps fort
+de toute l'animation** — soigne-le, le reste n'est qu'une apparition d'opacité.
+
+```js
+gsap.to('#hands-central', {
+  y: 62,                        // (190,290) -> (190,352)
+  scale: 0.35,
+  transformOrigin: '190px 290px',
+  duration: 1.0,
+  ease: 'power3.inOut'
+});
+```
+
+Les longueurs d'aiguilles passent de 55 et 88 à 19,3 et 30,8. Les deux rapports exacts
+seraient 0,364 et 0,341 : un `scale` unique de 0,35 est le compromis, l'écart est
+invisible à cette taille.
+
+## Les compteurs — un par donnée réelle
+
+| Position | Donnée | Réelle ? |
+|---|---|---|
+| Centre | les secondes, au pas d'une seconde | oui, l'heure système |
+| 6 h | heures et minutes | oui |
+| 12 h (état 3) | jour / nuit | oui, dès que le toggle de thème existe |
+
+Ont été **retirés**, et ne doivent pas revenir sans une donnée nouvelle :
+
+- **Le compteur d'époque.** La molette l'affiche déjà en mots avec un marqueur actif.
+  Un compteur qui répète n'est pas faux, il est redondant — et la redondance coûte le
+  même espace visuel que le mensonge.
+- **Le compteur de veille.** Le module « Dernière veille » donne déjà la date en texte.
+  Une aiguille qui pointe un nombre de jours est moins lisible qu'une date écrite.
+
+Règle générale : un compteur = une donnée réelle **et non redondante**. Le cadran a la
+densité que les données autorisent, ni plus ni moins.
+
+## Trotteuse
+
+Rotation par **pas d'une seconde**, pas en balayage continu :
+
+```css
+@keyframes montre-sec { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+#hand-seconds { animation: montre-sec 60s steps(60) infinite; transform-origin: 190px 290px; }
+@media (prefers-reduced-motion: reduce) { #hand-seconds { animation: none; } }
+```
+
+Une aiguille qui glisse en continu sur un cadran de cette taille, au milieu d'un hero,
+capte l'attention en permanence. Un pas à 1 Hz est perceptible sans être intrusif, et
+c'est ce qui rend la montre compatible avec la règle « le contenu clé ne s'anime jamais
+en boucle ».
+
+**À corriger à l'intégration :** la position de départ de `#hand-seconds` est à 18°,
+soit pile sur une graduation (18 = 3 × 6°). Si tu changes cette position, garde un
+multiple de 6°, sinon l'aiguille s'arrête entre les repères à chaque pas — invisible
+sur un rendu fixe, mais ça fait « pas fini » dès que l'animation tourne.
+
+## Budget de l'intro — à trancher avec Axel
+
+Le plafond de l'intro est de **2 s** entre l'appui sur le poussoir et l'affichage du hero
+(voir `DESIGN.md`). L'assemblage complet Avant → Après ne tient pas dedans : il faut
+3 à 4 s pour que la migration des aiguilles soit lisible. Trois sorties, aucune n'est
+prise :
+
+1. **L'intro joue 1 → 2 seulement.** Le cyan devient la récompense du premier tour de
+   molette. Tient dans le budget, et donne une raison concrète de toucher la molette.
+   *C'est l'option recommandée.*
+2. **L'intro joue l'assemblage complet en accéléré.** Tient dans le budget mais la
+   migration des aiguilles devient illisible, donc le temps fort est gâché.
+3. **L'intro passe à 3,5 s.** L'effet est complet, au prix en conversion que le hero
+   double cherchait justement à éviter.
+
+## Montre et thème clair
+
+Le SVG est écrit pour le fond sombre. En thème clair :
+cadran `#FFFFFF`, graduations `#B8B2A4`, matière `#C9A05A`, accent `#B84A3B`,
+et le reflet spéculaire **n'a pas d'équivalent** — il faut le remplacer par une ombre
+portée douce, pas l'atténuer. Un boîtier laiton sur fond clair est une illustration,
+là où sur fond sombre c'est un objet éclairé dans le noir. C'est le coût du thème clair
+sur cet asset, et il est connu.
+
+## Fallback statique
+
+Sans WebGL ou sous `prefers-reduced-motion` : sers le SVG avec `#l2` et `#l3` à
+`opacity: 1`, `#hands-central` déjà transformé, et aucune animation. L'état final est
+complet et lisible sans une seule ligne de JavaScript.

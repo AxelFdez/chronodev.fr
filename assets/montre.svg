@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 41 380 412" role="img" aria-label="Montre à gousset chronographe">
+  <defs>
+    <linearGradient id="m-brass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E8CF9A"/>
+      <stop offset="0.32" stop-color="#C9A05A"/>
+      <stop offset="0.66" stop-color="#B8893B"/>
+      <stop offset="1" stop-color="#6E5324"/>
+    </linearGradient>
+    <linearGradient id="m-brass-flank" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8A6A2E"/>
+      <stop offset="1" stop-color="#4F3A18"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ============ CALQUE 1 — toujours visible. Boîtier mat, cadran nu. ============ -->
+  <g id="l1">
+    <circle cx="190" cy="72" r="22" fill="none" stroke="#8A6A2E" stroke-width="9"/>
+    <circle cx="190" cy="100" r="8" fill="#6E5324"/>
+    <rect x="174" y="104" width="32" height="34" rx="6" fill="#8A6A2E"/>
+    <g stroke="#5A4420" stroke-width="1.8">
+      <line x1="183" y1="111" x2="183" y2="131"/>
+      <line x1="190" y1="111" x2="190" y2="131"/>
+      <line x1="197" y1="111" x2="197" y2="131"/>
+    </g>
+    <rect x="182" y="138" width="16" height="26" fill="#6E5324"/>
+    <rect x="273.8" y="178.7" width="36" height="19" rx="9.5" transform="rotate(45 291.8 188.2)" fill="#8A6A2E"/>
+    <circle cx="190" cy="304" r="130" fill="#5A4420"/>
+    <rect x="170" y="428" width="14" height="17" rx="4" fill="#6E5324" stroke="#4F3A18" stroke-width="1"/>
+    <rect x="196" y="428" width="14" height="17" rx="4" fill="#6E5324" stroke="#4F3A18" stroke-width="1"/>
+    <line x1="183" y1="436" x2="197" y2="436" stroke="#4F3A18" stroke-width="3.5"/>
+    <circle cx="190" cy="290" r="130" fill="#8A6A2E"/>
+    <circle cx="190" cy="290" r="118" fill="none" stroke="#4F3A18" stroke-width="2.5"/>
+    <circle cx="190" cy="290" r="112" fill="#12161B"/>
+
+    <!-- stroke animé #3A4049 -> #454C57 au passage 1->2 -->
+    <g id="ticks-major" stroke="#3A4049" stroke-width="2.4">
+      <line x1="190" y1="186" x2="190" y2="194"/>
+      <line x1="242" y1="199.9" x2="238" y2="206.9"/>
+      <line x1="280.1" y1="238" x2="273.1" y2="242"/>
+      <line x1="294" y1="290" x2="286" y2="290"/>
+      <line x1="280.1" y1="342" x2="273.1" y2="338"/>
+      <line x1="242" y1="380.1" x2="238" y2="373.1"/>
+      <line id="tick-180" x1="190" y1="394" x2="190" y2="386"/>
+      <line x1="138" y1="380.1" x2="142" y2="373.1"/>
+      <line x1="99.9" y1="342" x2="106.9" y2="338"/>
+      <line x1="86" y1="290" x2="94" y2="290"/>
+      <line x1="99.9" y1="238" x2="106.9" y2="242"/>
+      <line x1="138" y1="199.9" x2="142" y2="206.9"/>
+    </g>
+
+    <!-- migre dans #subdial-hours au passage 1->2 -->
+    <g id="hands-central">
+      <line x1="190" y1="290" x2="221.6" y2="244.9" stroke="#B8893B" stroke-width="4.5"/>
+      <line x1="190" y1="290" x2="234" y2="366.2" stroke="#D9B26A" stroke-width="2.8"/>
+      <circle cx="190" cy="290" r="6" fill="#B8893B"/>
+    </g>
+  </g>
+
+  <!-- ============ CALQUE 2 — opacity 0 -> 1. La matière et l'instrument. ============ -->
+  <g id="l2" opacity="0">
+    <circle cx="190" cy="72" r="22" fill="none" stroke="url(#m-brass)" stroke-width="9"/>
+    <circle cx="190" cy="100" r="8" fill="#8A6A2E"/>
+    <rect x="174" y="104" width="32" height="34" rx="6" fill="url(#m-brass)"/>
+    <g stroke="#6E5324" stroke-width="1.8">
+      <line x1="183" y1="111" x2="183" y2="131"/>
+      <line x1="190" y1="111" x2="190" y2="131"/>
+      <line x1="197" y1="111" x2="197" y2="131"/>
+    </g>
+    <rect x="182" y="138" width="16" height="26" fill="#8A6A2E"/>
+    <rect x="273.8" y="178.7" width="36" height="19" rx="9.5" transform="rotate(45 291.8 188.2)" fill="url(#m-brass)"/>
+    <rect x="277" y="184" width="26" height="8" rx="4" transform="rotate(45 291.8 188.2)" fill="#6E5324" opacity="0.55"/>
+    <circle cx="190" cy="304" r="130" fill="url(#m-brass-flank)"/>
+    <g stroke="#4F3A18" stroke-width="2.2">
+      <line x1="286.6" y1="391.0" x2="277.7" y2="382.9"/>
+      <line x1="273.6" y1="403.6" x2="265.9" y2="394.4"/>
+      <line x1="258.9" y1="414.2" x2="252.5" y2="404.1"/>
+      <line x1="242.9" y1="422.8" x2="238.0" y2="411.9"/>
+      <line x1="225.9" y1="428.9" x2="222.6" y2="417.4"/>
+      <line x1="154.1" y1="428.9" x2="157.4" y2="417.4"/>
+      <line x1="137.1" y1="422.8" x2="142.0" y2="411.9"/>
+      <line x1="121.1" y1="414.2" x2="127.5" y2="404.1"/>
+      <line x1="106.4" y1="403.6" x2="114.1" y2="394.4"/>
+      <line x1="93.4" y1="391.0" x2="102.3" y2="382.9"/>
+    </g>
+    <rect x="170" y="428" width="14" height="17" rx="4" fill="#A6812F" stroke="#4F3A18" stroke-width="1"/>
+    <rect x="196" y="428" width="14" height="17" rx="4" fill="#A6812F" stroke="#4F3A18" stroke-width="1"/>
+    <line x1="183" y1="436" x2="197" y2="436" stroke="#6E5324" stroke-width="3.5"/>
+    <circle cx="190" cy="290" r="130" fill="url(#m-brass)"/>
+    <path d="M 319.5 301.3 A 130 130 0 0 1 60.5 301.3" fill="none" stroke="#E8CF9A" stroke-width="1.3" opacity="0.4"/>
+    <path d="M 62 267 A 124 124 0 0 1 167 162" fill="none" stroke="#E8CF9A" stroke-width="3" opacity="0.5"/>
+    <circle cx="190" cy="290" r="118" fill="none" stroke="#6E5324" stroke-width="2.5"/>
+    <circle cx="190" cy="290" r="112" fill="#12161B"/>
+
+    <g stroke="#454C57" stroke-width="2.4">
+      <line x1="190" y1="186" x2="190" y2="194"/>
+      <line x1="242" y1="199.9" x2="238" y2="206.9"/>
+      <line x1="280.1" y1="238" x2="273.1" y2="242"/>
+      <line x1="294" y1="290" x2="286" y2="290"/>
+      <line x1="280.1" y1="342" x2="273.1" y2="338"/>
+      <line x1="242" y1="380.1" x2="238" y2="373.1"/>
+      <line x1="138" y1="380.1" x2="142" y2="373.1"/>
+      <line x1="99.9" y1="342" x2="106.9" y2="338"/>
+      <line x1="86" y1="290" x2="94" y2="290"/>
+      <line x1="99.9" y1="238" x2="106.9" y2="242"/>
+      <line x1="138" y1="199.9" x2="142" y2="206.9"/>
+    </g>
+
+    <g id="ticks-minor" stroke="#3A4049" stroke-width="1">
+      <line x1="200.87" y1="186.57" x2="200.35" y2="191.54"/>
+      <line x1="211.62" y1="188.27" x2="210.58" y2="193.16"/>
+      <line x1="222.14" y1="191.09" x2="220.59" y2="195.84"/>
+      <line x1="232.30" y1="194.99" x2="230.27" y2="199.56"/>
+      <line x1="251.13" y1="205.86" x2="248.19" y2="209.91"/>
+      <line x1="259.59" y1="212.71" x2="256.24" y2="216.43"/>
+      <line x1="267.29" y1="220.41" x2="263.57" y2="223.76"/>
+      <line x1="274.14" y1="228.87" x2="270.09" y2="231.81"/>
+      <line x1="285.01" y1="247.70" x2="280.44" y2="249.73"/>
+      <line x1="288.91" y1="257.86" x2="284.16" y2="259.41"/>
+      <line x1="291.73" y1="268.38" x2="286.84" y2="269.42"/>
+      <line x1="293.43" y1="279.13" x2="288.46" y2="279.65"/>
+      <line x1="293.43" y1="300.87" x2="288.46" y2="300.35"/>
+      <line x1="291.73" y1="311.62" x2="286.84" y2="310.58"/>
+      <line x1="288.91" y1="322.14" x2="284.16" y2="320.59"/>
+      <line x1="285.01" y1="332.30" x2="280.44" y2="330.27"/>
+      <line x1="274.14" y1="351.13" x2="270.09" y2="348.19"/>
+      <line x1="267.29" y1="359.59" x2="263.57" y2="356.24"/>
+      <line x1="259.59" y1="367.29" x2="256.24" y2="363.57"/>
+      <line x1="251.13" y1="374.14" x2="248.19" y2="370.09"/>
+      <line x1="232.30" y1="385.01" x2="230.27" y2="380.44"/>
+      <line x1="222.14" y1="388.91" x2="220.59" y2="384.16"/>
+      <line x1="157.86" y1="388.91" x2="159.41" y2="384.16"/>
+      <line x1="147.70" y1="385.01" x2="149.73" y2="380.44"/>
+      <line x1="128.87" y1="374.14" x2="131.81" y2="370.09"/>
+      <line x1="120.41" y1="367.29" x2="123.76" y2="363.57"/>
+      <line x1="112.71" y1="359.59" x2="116.43" y2="356.24"/>
+      <line x1="105.86" y1="351.13" x2="109.91" y2="348.19"/>
+      <line x1="94.99" y1="332.30" x2="99.56" y2="330.27"/>
+      <line x1="91.09" y1="322.14" x2="95.84" y2="320.59"/>
+      <line x1="88.27" y1="311.62" x2="93.16" y2="310.58"/>
+      <line x1="86.57" y1="300.87" x2="91.54" y2="300.35"/>
+      <line x1="86.57" y1="279.13" x2="91.54" y2="279.65"/>
+      <line x1="88.27" y1="268.38" x2="93.16" y2="269.42"/>
+      <line x1="91.09" y1="257.86" x2="95.84" y2="259.41"/>
+      <line x1="94.99" y1="247.70" x2="99.56" y2="249.73"/>
+      <line x1="105.86" y1="228.87" x2="109.91" y2="231.81"/>
+      <line x1="112.71" y1="220.41" x2="116.43" y2="223.76"/>
+      <line x1="120.41" y1="212.71" x2="123.76" y2="216.43"/>
+      <line x1="128.87" y1="205.86" x2="131.81" y2="209.91"/>
+      <line x1="147.70" y1="194.99" x2="149.73" y2="199.56"/>
+      <line x1="157.86" y1="191.09" x2="159.41" y2="195.84"/>
+      <line x1="168.38" y1="188.27" x2="169.42" y2="193.16"/>
+      <line x1="179.13" y1="186.57" x2="179.65" y2="191.54"/>
+    </g>
+
+    <!-- reçoit #hands-central. Pas d'aiguilles propres : ce sont les migrantes. -->
+    <g id="subdial-hours">
+      <circle cx="190" cy="352" r="36" fill="#0F1318" stroke="#2E343D" stroke-width="1.4"/>
+      <circle cx="190" cy="352" r="30" fill="none" stroke="#1F252D" stroke-width="1"/>
+      <g stroke="#454C57" stroke-width="1.8">
+        <line x1="190" y1="316" x2="190" y2="322"/>
+        <line x1="226" y1="352" x2="220" y2="352"/>
+        <line x1="190" y1="388" x2="190" y2="382"/>
+        <line x1="154" y1="352" x2="160" y2="352"/>
+      </g>
+      <g stroke="#2E343D" stroke-width="1.2">
+        <line x1="215.5" y1="326.5" x2="212" y2="330"/>
+        <line x1="215.5" y1="377.5" x2="212" y2="374"/>
+        <line x1="164.5" y1="377.5" x2="168" y2="374"/>
+        <line x1="164.5" y1="326.5" x2="168" y2="330"/>
+      </g>
+    </g>
+
+    <!-- stroke animé #D9B26A -> #3FE0F0 au passage 2->3. Rotation : origine 190 290. -->
+    <line id="hand-seconds" x1="183.8" y1="309.0" x2="220.9" y2="194.9" stroke="#D9B26A" stroke-width="3"/>
+    <!-- fill animé #D9B26A -> #3FE0F0 au passage 2->3 -->
+    <circle id="cap-center" cx="190" cy="290" r="7" fill="#D9B26A"/>
+  </g>
+
+  <!-- ============ CALQUE 3 — opacity 0 -> 1. L'accent arrive. ============ -->
+  <g id="l3" opacity="0">
+    <circle cx="190" cy="290" r="114" fill="none" stroke="#E8CF9A" stroke-width="0.8" opacity="0.28"/>
+    <g id="daynight">
+      <circle cx="190" cy="228" r="26" fill="#0F1318" stroke="#2E343D" stroke-width="1.2"/>
+      <path d="M 190 202 A 26 26 0 0 1 190 254 Z" fill="#3FE0F0" opacity="0.2"/>
+      <line x1="190" y1="202" x2="190" y2="254" stroke="#2E343D" stroke-width="1"/>
+      <circle cx="203" cy="228" r="2.6" fill="#3FE0F0"/>
+      <circle cx="177" cy="228" r="2.2" fill="none" stroke="#454C57" stroke-width="1.2"/>
+    </g>
+  </g>
+</svg>
