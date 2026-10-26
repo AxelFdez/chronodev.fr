@@ -45,7 +45,7 @@ et `docs/BRIEF.md` (contenu et positionnement) avant d'écrire du code.
 | Sujet | Décision |
 |---|---|
 | Hero | **Hero double.** Intro à la première visite, hero de conversion ensuite. |
-| Intro | Joue l'assemblage **1 → 2 seulement**, 2 s au plus. Voir `docs/MONTRE.md` § Budget. |
+| Intro | Joue l'assemblage **1 → 2 seulement**, 2 s au plus entre l'appui sur le poussoir et l'affichage du hero. Le passage 2 → 3 (0,8 s) se joue juste après l'apparition du hero. Voir `docs/MONTRE.md` § Budget. |
 | Rendu | **Pas de three.js, pas de WebGL.** La montre et l'intro sont en SVG + GSAP. |
 | Époques | Le projet **du client** : avant / pendant / après. Pas le CV d'Axel. |
 | Molette | Position par défaut au chargement : **Après**. La **couronne de la montre** est la molette (glisser, desktop) ; le groupe radio Avant / Pendant / Après en est le contrôle clavier et, sur mobile, les onglets. |
@@ -73,8 +73,6 @@ et `docs/BRIEF.md` (contenu et positionnement) avant d'écrire du code.
   aucun chiffre avant/après. Le module « Dernière veille » prouve qu'Axel suit
   l'actualité, pas qu'il livre. C'est le manque le plus coûteux du projet.
 - Le sous-titre définitif (la piste actuelle est dans `docs/BRIEF.md`).
-- Le passage de l'état 2 (fin de l'intro) à l'état 3 (hero, molette sur Après), et la
-  justification de l'intro 1 → 2 (voir `docs/MONTRE.md` § Budget, `docs/PLAN.md` C2).
 
 ## Commandes
 

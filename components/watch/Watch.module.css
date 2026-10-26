@@ -196,6 +196,34 @@
   display: none;
 }
 
+/* --- Intro : la montre attend au centre, à l'état 1, puis rejoint le hero (Flip) --- */
+
+:global(:root[data-intro='a-jouer']:not(:has(#contenu:target))) .boite,
+:global(:root[data-intro='en-cours']) .boite {
+  /* Centrée par left/top calculés, sans transform ni translate : GSAP (Flip) s'approprie
+     ces propriétés au premier contact et les garderait après l'intro. Hauteur = largeur
+     × 412/380, le rapport du viewBox. */
+  --taille-intro: min(78vw, 56vh, 420px);
+  position: fixed;
+  z-index: 15;
+  left: calc(50% - var(--taille-intro) / 2);
+  top: calc(50% + 24px - var(--taille-intro) * 412 / 380 / 2);
+  inline-size: var(--taille-intro);
+}
+
+/* Avant GSAP, le CSS seul affiche l'état 1 (le script inline a recentré les aiguilles). */
+:global(:root[data-intro='a-jouer']:not(:has(#contenu:target))) .watch {
+  --w-p2: 0;
+  --w-p3: 0;
+}
+
+/* Le poussoir à presser : un double anneau, lisible sur le laiton comme sur le fond. */
+:global(:root[data-intro='a-jouer']) .chrono {
+  box-shadow:
+    0 0 0 2px var(--bg),
+    0 0 0 4px var(--text);
+}
+
 /* --- Couronne : la molette au pointeur --- */
 
 .couronne {

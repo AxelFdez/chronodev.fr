@@ -8,6 +8,16 @@ import styles from './page.module.css';
 export default function Home() {
   return (
     <main id="contenu">
+      {/* Intro de première visite : consigne et sortie. Affichées seulement si l'intro se
+          joue (décision prise avant le premier paint, lib/html-state.ts). Le lien marche
+          même avant React : #contenu:target désactive l'intro en CSS. */}
+      <div className={styles.intro}>
+        <p className={styles.introConsigne}>{site.introConsigne}</p>
+        <a className={styles.introPasser} href="#contenu">
+          {site.introPasser}
+        </a>
+      </div>
+
       {/* Grain pleine page, sous le contenu ; son intensité suit l'époque cochée (CSS). */}
       <div className={styles.grain} aria-hidden="true" />
 

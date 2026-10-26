@@ -9,6 +9,7 @@ import {
   pageBackground,
   storeTheme,
 } from './helpers';
+import { PREMIERE_VISITE } from './etat-initial';
 
 // CLAUDE.md § Vérifications — tranche 1 (socle). Les numéros renvoient à cette liste.
 
@@ -119,9 +120,13 @@ test.describe('Thème (vérification 5)', () => {
     expect(errors).toEqual([]);
   });
 
-  test('première visite avec stockage disponible : intro à jouer', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.locator('html')).toHaveAttribute('data-intro', 'a-jouer');
+  test.describe('première visite', () => {
+    test.use({ storageState: PREMIERE_VISITE });
+
+    test('stockage disponible : intro à jouer', async ({ page }) => {
+      await page.goto('/');
+      await expect(page.locator('html')).toHaveAttribute('data-intro', 'a-jouer');
+    });
   });
 });
 

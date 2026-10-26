@@ -164,12 +164,14 @@ aiguilles garde le temps d'être lisible, et le cyan n'apparaît pas dans l'intr
 - une intro de 3,5 s : l'effet est complet, au prix en conversion que le hero double
   cherchait justement à éviter.
 
-⚠ **Reste ouvert** (voir `PLAN.md`, C2) :
-- La justification d'origine, « le cyan devient la récompense du premier tour de
-  molette », ne tient pas : la molette est sur Après au chargement, donc le cyan est
-  déjà affiché avant tout geste.
-- L'intro finit sur l'état 2 et le hero affiche l'état 3. Le moment où se joue le
-  passage 2 → 3 n'est pas décidé.
+**Décidé (`PLAN.md` C2) :**
+- **Justification.** L'option 1 tient parce que c'est la seule qui laisse la migration
+  des aiguilles lisible en 2 s. L'argument d'origine, « le cyan devient la récompense du
+  premier tour de molette », est abandonné : la molette est sur Après au chargement, donc
+  le cyan est déjà là avant tout geste.
+- **Passage 2 → 3.** Il se joue juste après l'apparition du hero, en 0,8 s, quand le
+  texte est déjà lisible. Il ne compte pas dans les 2 s de l'intro, et l'accent arrive
+  sans geste du visiteur.
 
 ## Montre et thème clair
 

@@ -53,3 +53,14 @@ a {
 .skip-link:focus-visible {
   transform: none;
 }
+
+/* Intro de première visite : la page ne défile pas, le pied de page attend. */
+:root[data-intro='a-jouer']:not(:has(#contenu:target)),
+:root[data-intro='en-cours'] {
+  overflow: hidden;
+}
+
+:root[data-intro='a-jouer']:not(:has(#contenu:target)) body > footer,
+:root[data-intro='en-cours'] body > footer {
+  visibility: hidden;
+}

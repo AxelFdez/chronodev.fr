@@ -5,6 +5,18 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { EPOQUES } from '@/content/epoques';
 import { poserHeure } from '@/lib/horloge';
 import {
+  appuiPrecoce,
+  BUDGET_INTRO_MS,
+  DUREE_ACCENT,
+  DUREE_ASSEMBLAGE,
+  DUREE_REVELATION,
+  LIBELLE_CHRONO,
+  LIBELLE_INTRO,
+  lireIntro,
+  setIntro,
+  useIntro,
+} from '@/lib/intro';
+import {
   construireTimeline,
   dureeVers,
   type Etat,
@@ -94,9 +106,13 @@ const MINOR = Array.from({ length: 60 }, (_, i) => i * 6).filter(
 const POSE = { heures: 42.5, minutes: 150, secondes: 18 };
 
 export function Watch() {
-  const etat = useSyncExternalStore(surChangement, getEtat, getEtatServeur);
+  const intro = useIntro();
+  const etatRadio = useSyncExternalStore(surChangement, getEtat, getEtatServeur);
+  // Pendant l'intro, la montre attend à l'état 1, puis s'assemble jusqu'à l'état 2.
+  const etat: Etat = intro === 'vue' ? etatRadio : intro === 'en-cours' ? 2 : 1;
   const reduit = useSyncExternalStore(surPreference, getReduit, getReduitServeur);
   const svgRef = useRef<SVGSVGElement>(null);
+  const boiteRef = useRef<HTMLDivElement>(null);
   const glisser = useRef<{ x: number; depart: number } | null>(null);
 
   // --- Chrono : en marche par défaut, arrêté sous mouvement réduit ---
@@ -128,12 +144,16 @@ export function Watch() {
     };
   }, [marche]);
 
+  function enfoncer() {
+    setAppui(true);
+    window.setTimeout(() => setAppui(false), 200);
+  }
+
   function basculerChrono() {
     if (marche) trotteuseFigee.current = new Date().getSeconds() * 6;
     else trotteuseFigee.current = null;
     setChoix(!marche);
-    setAppui(true);
-    window.setTimeout(() => setAppui(false), 200);
+    enfoncer();
   }
 
   // --- États : GSAP chargé à la demande, hors du chemin critique ---
@@ -141,16 +161,25 @@ export function Watch() {
     gsap?: typeof Gsap;
     tl?: ReturnType<typeof Gsap.timeline>;
     tween?: ReturnType<typeof Gsap.to>;
+    pret?: Promise<void>;
+    flip?: Promise<typeof import('gsap/Flip')>;
   }>({});
+  // Comment jouer le prochain changement d'état : l'accent après l'intro (0,8 s, une fois
+  // la montre arrivée dans le hero), ou sans animation après un saut d'intro.
+  const suite = useRef<'accent' | 'instant' | null>(null);
+  const sequenceLancee = useRef(false);
+
   useEffect(() => {
     const svg = svgRef.current!;
     if (reduit) return;
     let annule = false;
-    import('gsap').then(({ gsap }) => {
+    if (lireIntro() !== 'vue') anim.current.flip = import('gsap/Flip');
+    anim.current.pret = import('gsap').then(({ gsap }) => {
       if (annule) return;
       const tl = construireTimeline(gsap, svg);
-      tl.seek(LABEL[getEtat()]); // l'époque cochée à cet instant
-      anim.current = { gsap, tl };
+      // L'état affiché à cet instant : 1 pendant l'attente de l'intro, sinon l'époque cochée.
+      tl.seek(LABEL[lireIntro() === 'vue' ? getEtat() : 1]);
+      Object.assign(anim.current, { gsap, tl });
       svg.dataset.gsap = '';
     });
     return () => {
@@ -163,24 +192,113 @@ export function Watch() {
   }, [reduit]);
 
   useEffect(() => {
+    if (intro === 'en-cours') return; // la séquence d'intro pilote la timeline
     const svg = svgRef.current!;
     const { tl } = anim.current;
-    if (reduit || !tl) {
-      poserEtat(svg, etat);
+    const mode = suite.current;
+    suite.current = null;
+    if (reduit || !tl || mode === 'instant') {
+      anim.current.tween?.kill();
+      if (tl) tl.seek(LABEL[etat]);
+      else poserEtat(svg, etat);
       return;
     }
     if (tl.labels[LABEL[etat]] === tl.time()) return;
     anim.current.tween?.kill();
     svg.dataset.anime = '';
     anim.current.tween = tl.tweenTo(LABEL[etat], {
-      duration: dureeVers(tl, etat),
+      duration: mode === 'accent' ? DUREE_ACCENT : dureeVers(tl, etat),
+      delay: mode === 'accent' ? DUREE_REVELATION : 0,
       ease: 'power2.inOut',
       onComplete: () => delete svg.dataset.anime,
     });
-  }, [etat, reduit]);
+  }, [etat, reduit, intro]);
+
+  // --- Intro ---
+
+  function passerIntro() {
+    if (lireIntro() === 'vue') return;
+    sequenceLancee.current = true;
+    anim.current.tween?.kill();
+    suite.current = 'instant';
+    setIntro('vue');
+    performance.mark('intro:hero');
+  }
+
+  async function reveler(gsap: typeof Gsap) {
+    suite.current = 'accent';
+    // Mobile : intro allégée, la montre rejoint sa place sans trajet (BRIEF.md).
+    if (matchMedia('(max-width: 899px)').matches || !anim.current.flip) {
+      setIntro('vue');
+      window.setTimeout(() => performance.mark('intro:hero'), 400); // fondu du hero
+      return;
+    }
+    const { Flip } = await anim.current.flip;
+    gsap.registerPlugin(Flip);
+    const avant = Flip.getState(boiteRef.current!);
+    setIntro('vue'); // la mise en page du hero s'applique tout de suite
+    Flip.from(avant, {
+      duration: DUREE_REVELATION,
+      ease: 'power2.inOut',
+      scale: true,
+      clearProps: 'transform', // la montre retrouve exactement sa place dans le hero
+      onComplete: () => performance.mark('intro:hero'),
+    });
+  }
+
+  async function jouerIntro(t0 = performance.now()) {
+    if (sequenceLancee.current || lireIntro() !== 'a-jouer') return;
+    sequenceLancee.current = true;
+    performance.mark('intro:appui', { startTime: t0 });
+    setIntro('en-cours');
+    enfoncer();
+    // Le trajet vers le hero garde sa durée ; l'assemblage prend ce que le budget laisse,
+    // au plus 1,1 s. En dessous de 0,6 s, la migration serait illisible : on montre le hero.
+    const revelation = (matchMedia('(max-width: 899px)').matches ? 0.4 : DUREE_REVELATION) * 1000;
+    const minimum = 600;
+    const marge = Math.max(0, BUDGET_INTRO_MS - (performance.now() - t0) - revelation - minimum);
+    // GSAP doit être là ; on ne l'attend pas au-delà de ce que le budget permet.
+    await Promise.race([anim.current.pret, new Promise((r) => setTimeout(r, marge))]);
+    const { gsap, tl } = anim.current;
+    const assemblage = Math.min(
+      DUREE_ASSEMBLAGE * 1000,
+      BUDGET_INTRO_MS - (performance.now() - t0) - revelation - 50,
+    );
+    if (!gsap || !tl || assemblage < minimum) return passerIntro();
+    anim.current.tween = tl.tweenTo('pendant', {
+      duration: assemblage / 1000,
+      ease: 'power2.inOut',
+      onComplete: () => void reveler(gsap),
+    });
+  }
+
+  useEffect(() => {
+    if (intro !== 'a-jouer') return;
+    // Sorties : lien « Passer l'intro » (déjà suivi sans JS, via :target), Échap, ou toute
+    // intention de défiler. L'intro ne retient personne.
+    if (location.hash === '#contenu') return passerIntro();
+    const t0 = appuiPrecoce();
+    if (t0 !== undefined) void jouerIntro(t0);
+    const touche = (e: KeyboardEvent) => {
+      if (['Escape', 'PageDown', 'ArrowDown', 'End'].includes(e.key)) passerIntro();
+    };
+    const opts = { passive: true } as const;
+    document.addEventListener('keydown', touche);
+    window.addEventListener('wheel', passerIntro, opts);
+    window.addEventListener('touchmove', passerIntro, opts);
+    window.addEventListener('hashchange', passerIntro);
+    return () => {
+      document.removeEventListener('keydown', touche);
+      window.removeEventListener('wheel', passerIntro);
+      window.removeEventListener('touchmove', passerIntro);
+      window.removeEventListener('hashchange', passerIntro);
+    };
+    // jouerIntro et passerIntro ne lisent que des refs et le DOM : pas de dépendance d'état.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [intro]);
 
   return (
-    <div className={styles.boite}>
+    <div ref={boiteRef} className={styles.boite}>
       <svg
         ref={svgRef}
         className={styles.watch}
@@ -433,7 +551,7 @@ export function Watch() {
 
         {/* Aiguilles h/m : au centre à l'état 1, dans le sous-cadran ensuite. Au-dessus de tout
             le cadran (S1). Dessinées à 0°, orientées par rotate() (S6, S7). */}
-        <g data-part="aiguilles" transform={MIGRATION}>
+        <g data-part="aiguilles" transform={MIGRATION} suppressHydrationWarning>
           <line
             className={styles.hourHand}
             data-aiguille="heures"
@@ -509,14 +627,17 @@ export function Watch() {
         />
       </svg>
 
-      {/* Le poussoir de 1 h 30 : un vrai bouton, posé sur le dessin. Il arrête et relance le
-          chrono (WCAG 2.2.2 : tout ce qui bouge plus de 5 s doit pouvoir s'arrêter). */}
+      {/* Le poussoir de 1 h 30 : un vrai bouton, posé sur le dessin. À la première visite, il
+          lance l'intro ; ensuite, il arrête et relance le chrono (WCAG 2.2.2 : tout ce qui
+          bouge plus de 5 s doit pouvoir s'arrêter). */}
       <button
         type="button"
         className={styles.chrono}
-        aria-label="Arrêter le chrono"
-        aria-pressed={!marche}
-        onClick={basculerChrono}
+        data-poussoir=""
+        aria-label={intro === 'vue' ? LIBELLE_CHRONO : LIBELLE_INTRO}
+        aria-pressed={intro === 'vue' ? !marche : undefined}
+        onClick={() => (intro === 'vue' ? basculerChrono() : void jouerIntro())}
+        suppressHydrationWarning
       />
     </div>
   );

@@ -29,7 +29,7 @@ concept mais a gardé des phrases écrites pour l'ancien.
 Proposition : l'intro = appui sur le poussoir, puis assemblage 1 → 2 en SVG (option 1).
 Retirer « le boîtier s'ouvre, la caméra plonge » du brief.
 
-### C2 — Molette par défaut sur « Après » contre récit de construction → Axel
+### C2 — Molette par défaut sur « Après » contre récit de construction · ✓ réglé (2 → 3 joué 0,8 s après l'apparition du hero)
 L'intro 1 → 2 est décidée. Restent ouverts : la justification de l'option 1, et le moment
 du passage 2 → 3.
 - Avec le défaut sur Après, le visiteur arrive sur la montre **complète** (état 3, cyan
@@ -373,7 +373,7 @@ arrêté, le minuteur ne repasse qu'à la minute.
 Pour la tranche 5 : la timeline vit dans `lib/montre-animation.ts` (labels `avant`,
 `pendant`, `apres`). L'intro jouera `avant` → `pendant` sur la même instance.
 
-### T5 — Intro
+### T5 — Intro · ✓ livrée (test iPhone : Axel)
 Contenu : assemblage 1 → 2 seulement, une seule fois, sautable (bouton, lien, Échap), 2 s
 au plus, poussoir actif au premier frame, passage de la montre dans le hero par Flip. Le
 passage 2 → 3 attend la réponse à C2. Ajouter le drapeau `chronodev-intro-vue` à la
@@ -387,6 +387,39 @@ Vérification de fin :
   casse.
 - Sous reduced-motion : fondu court ou intro sautée.
 - LCP en première visite comparé à la référence de T4 (`lhci`).
+
+Ce qui a été livré :
+- **Déroulé.** La montre attend au centre, à l'état 1. L'appui l'assemble (1 → 2, 1,1 s),
+  puis elle rejoint le hero par Flip (0,6 s ; sur mobile, intro allégée : pas de trajet,
+  le hero apparaît en fondu). L'accent (2 → 3, 0,8 s) suit, une fois la montre en place
+  (C2). Mesuré : 1 685 ms de l'appui au hero sur desktop, 1 489 ms sur mobile.
+- **Décision avant le premier paint.** Le script de `<head>` décide de l'intro : première
+  visite, stockage lisible, pas de mouvement réduit. Elle est marquée vue **dès son
+  affichage**, donc jamais rejouée, même sans appui. Le script inline qui suit la montre
+  la met à l'état 1 avant le premier paint.
+- **Poussoir actif au premier frame.** Un appui avant React est noté par le script de
+  `<head>`. React reprend la séquence en ajustant l'assemblage au budget restant, et la
+  saute s'il reste moins de 0,6 s. Si React n'est pas là au bout de 2 s, un filet dans le
+  script de `<head>` affiche le hero.
+- **Sorties.** « Passer l'intro » (un lien `#contenu`, qui marche sans React grâce à
+  `:target`), Échap, la molette de la souris, un geste de défilement, PageDown ou
+  ArrowDown.
+- **Accessibilité.** Pendant l'intro, le texte du hero n'est masqué qu'à l'œil : le titre
+  reste lu par les lecteurs d'écran (axe l'exigeait). Tout ce qui se focalise est masqué
+  par `visibility`, donc aucun focus invisible. La barre du haut reste utilisable.
+- **Tests** : 16 dédiés. Leurs gardes ont été vérifiées par mutation : centrage par
+  `translate`, filet retiré, trajet oublié dans le budget.
+
+Défauts trouvés en route et corrigés :
+- La montre finissait décalée d'une demi-taille après le Flip : GSAP avait repris à son
+  compte la propriété `translate` du centrage. Elle est maintenant centrée par `left` et
+  `top` calculés.
+- Le budget ne comptait pas le trajet vers le hero : un appui avant React pouvait
+  dépasser les 2 s. L'assemblage prend désormais ce qui reste une fois le trajet compté.
+
+Lighthouse mesure désormais une **première visite**, donc l'écran d'intro : médiane 96,
+LCP 1,7 s. Le hero de conversion, lui, est couvert par le test LCP de Playwright, qui
+simule un visiteur ayant déjà vu l'intro.
 
 ### T6 — Module Dernière veille
 Contenu : schéma du JSON (date ISO, titre, résumé, URL de la source), récupération côté

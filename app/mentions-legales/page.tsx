@@ -41,9 +41,9 @@ export default function MentionsLegales() {
       <h2>Données personnelles</h2>
       <p>
         Ce site ne dépose aucun cookie et n’utilise aucun outil de mesure d’audience. Il garde dans
-        votre navigateur le thème que vous avez choisi ; cette préférence ne quitte pas votre
-        appareil. Les polices sont servies par le site lui-même : aucune requête n’est envoyée à un
-        service tiers.
+        votre navigateur deux préférences, qui ne quittent pas votre appareil : le thème que vous
+        avez choisi, et le fait d’avoir déjà vu l’introduction. Les polices sont servies par le site
+        lui-même : aucune requête n’est envoyée à un service tiers.
       </p>
       <p>
         Le serveur conserve des journaux techniques (adresse IP, date, page demandée) pendant{' '}

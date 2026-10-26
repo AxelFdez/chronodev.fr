@@ -1,5 +1,6 @@
 import { test } from '@playwright/test';
 import { DIX_HEURES, hydrated, montreAuRepos, storeTheme } from './helpers';
+import { INTRO_VUE, PREMIERE_VISITE } from './etat-initial';
 
 // Captures à LIRE avant de conclure une tranche : artifacts/screens/.
 // Sans JavaScript, le thème clair est impossible (il dépend du script) : seul le sombre existe.
@@ -20,6 +21,7 @@ for (const [name, viewport] of Object.entries(viewports)) {
     const id = `${name}-${theme}-${motion === 'reduce' ? 'reduit' : 'normal'}-${js ? 'js' : 'sans-js'}`;
     test(`capture ${id}`, async ({ browser }) => {
       const context = await browser.newContext({
+        storageState: INTRO_VUE,
         viewport,
         reducedMotion: motion,
         javaScriptEnabled: js,
@@ -47,7 +49,7 @@ for (const [name, viewport] of Object.entries(viewports)) {
   for (const theme of ['dark', 'light'] as const) {
     for (const epoque of ['avant', 'pendant'] as const) {
       test(`capture ${name}-${theme}-${epoque}`, async ({ browser }) => {
-        const context = await browser.newContext({ viewport });
+        const context = await browser.newContext({ viewport, storageState: INTRO_VUE });
         const page = await context.newPage();
         await storeTheme(page, theme);
         // GSAP lit Date.now() : l'horloge doit avancer pendant l'animation, puis on la fige
@@ -66,7 +68,11 @@ for (const [name, viewport] of Object.entries(viewports)) {
     }
   }
   test(`capture ${name}-dark-avant-sans-js`, async ({ browser }) => {
-    const context = await browser.newContext({ viewport, javaScriptEnabled: false });
+    const context = await browser.newContext({
+      viewport,
+      javaScriptEnabled: false,
+      storageState: INTRO_VUE,
+    });
     const page = await context.newPage();
     await page.goto('/');
     await page.getByRole('radio', { name: 'Avant' }).click();
@@ -74,4 +80,22 @@ for (const [name, viewport] of Object.entries(viewports)) {
     await page.screenshot({ path: `artifacts/screens/epoque-${name}-dark-avant-sans-js.png` });
     await context.close();
   });
+}
+
+// L'intro de première visite, avant l'appui.
+for (const [name, viewport] of Object.entries(viewports)) {
+  for (const theme of ['dark', 'light'] as const) {
+    test(`capture intro ${name}-${theme}`, async ({ browser }) => {
+      const context = await browser.newContext({ viewport, storageState: PREMIERE_VISITE });
+      const page = await context.newPage();
+      await storeTheme(page, theme);
+      await page.clock.setFixedTime(DIX_HEURES);
+      await page.goto('/');
+      await hydrated(page);
+      await page.evaluate(() => document.fonts.ready);
+      await page.locator('svg[data-gsap]').waitFor({ state: 'attached' });
+      await page.screenshot({ path: `artifacts/screens/intro-${name}-${theme}.png` });
+      await context.close();
+    });
+  }
 }

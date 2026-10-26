@@ -13,6 +13,9 @@ export const site = {
   cible: 'Pour les PME, les startups et les particuliers.',
   // Proposé en tranche 2, à valider par Axel.
   cta: 'Parlons de votre projet',
+  // Intro de première visite. Proposé en tranche 5, à valider par Axel.
+  introConsigne: 'Appuyez sur le poussoir, en haut à droite de la montre.',
+  introPasser: 'Passer l’intro',
 } as const;
 
 export const contact = {

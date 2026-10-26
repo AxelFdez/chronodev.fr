@@ -166,3 +166,59 @@
     padding: 72px 32px 96px;
   }
 }
+
+/* --- Intro de première visite (lib/intro.ts) ---
+ * Active tant que <html data-intro> vaut a-jouer (sauf lien « Passer » suivi) ou en-cours.
+ * Le texte du hero n'est masqué qu'à l'œil (opacité) : les lecteurs d'écran gardent le
+ * titre de la page. Tout ce qui se focalise est masqué par visibility : aucun focus
+ * invisible. */
+
+.hero,
+.zoneEpoques,
+.contact {
+  transition: opacity 0.4s var(--ease-power2-out);
+}
+
+:global(:root[data-intro='a-jouer']:not(:has(#contenu:target)))
+  :is(.hero, .zoneEpoques, .contact, .grain),
+:global(:root[data-intro='en-cours']) :is(.hero, .zoneEpoques, .contact, .grain) {
+  opacity: 0;
+}
+
+:global(:root[data-intro='a-jouer']:not(:has(#contenu:target))) :is(.cta, .zoneEpoques, .contact),
+:global(:root[data-intro='en-cours']) :is(.cta, .zoneEpoques, .contact) {
+  visibility: hidden;
+}
+
+.intro {
+  display: none;
+}
+
+:global(:root[data-intro='a-jouer']:not(:has(#contenu:target))) .intro {
+  position: fixed;
+  z-index: 16;
+  left: 0;
+  right: 0;
+  bottom: 24px;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.introConsigne {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.introPasser {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  color: var(--text);
+}

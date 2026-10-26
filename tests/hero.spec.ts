@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { comparerCaptures, hydrated, MIDI, storeTheme } from './helpers';
+import { INTRO_VUE } from './etat-initial';
 
 // Tranche 2 : hero de conversion, montre statique corrigée, contact, mentions légales.
 
@@ -167,7 +168,11 @@ for (const [nom, viewport] of [
 
   test(`${nom} : la page est la même avec ou sans JavaScript`, async ({ browser }) => {
     const capture = async (javaScriptEnabled: boolean) => {
-      const context = await browser.newContext({ viewport, javaScriptEnabled });
+      const context = await browser.newContext({
+        viewport,
+        javaScriptEnabled,
+        storageState: INTRO_VUE,
+      });
       const page = await context.newPage();
       await page.goto('/');
       if (javaScriptEnabled) await hydrated(page);

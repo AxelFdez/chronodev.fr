@@ -27,4 +27,16 @@ export function poserHeure(trotteuse?: number) {
   tourner('jour-nuit', 90 - ((h + m / 60) / 12) * 180, 228);
 }
 
-export const HORLOGE_SCRIPT = `(${poserHeure.toString()})()`;
+/**
+ * Sérialisée après la montre, avec la mise à l'heure : si l'intro va se jouer, la montre
+ * est à l'état 1 dès le premier paint (aiguilles au centre) et le poussoir dit ce qu'il fait.
+ * Autonome : libellé écrit en dur (= LIBELLE_INTRO).
+ */
+export function preparerIntro() {
+  if (document.documentElement.dataset.intro !== 'a-jouer') return;
+  document.querySelector('svg[data-etat] [data-part="aiguilles"]')?.removeAttribute('transform');
+  document.querySelector('[data-poussoir]')?.setAttribute('aria-label', 'Démarrer la montre');
+}
+
+// Mise à l'heure, puis préparation de l'intro (état 1) si elle va se jouer.
+export const HORLOGE_SCRIPT = `(${poserHeure.toString()})();(${preparerIntro.toString()})()`;
