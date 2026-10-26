@@ -140,12 +140,12 @@ Règles :
 - Une seule timeline GSAP pilote la molette ; les époques sont des plages de cette timeline.
 - Le contenu clé (accroche, offres, contact) ne s'anime **jamais** en boucle et reste
   lisible sans animation.
-- Sous `prefers-reduced-motion` : pas de shader, pas de parallaxe, fondus courts, et
+- Sous `prefers-reduced-motion` : pas de parallaxe, fondus courts, et
   toute boucle à l'arrêt (y compris la trotteuse de la montre).
 - L'intro ne dépasse pas **2 s** entre l'appui sur le poussoir et l'affichage du hero.
   Le poussoir est cliquable au premier frame, sans mise en place préalable.
-  Voir `MONTRE.md` § Budget : l'assemblage complet ne tient pas dans ces 2 s, et il
-  faut trancher ce que l'intro montre.
+  L'intro joue l'assemblage 1 → 2 seulement (`MONTRE.md` § Budget) : l'assemblage
+  complet ne tient pas dans ces 2 s.
 
 ## Hiérarchie du hero
 

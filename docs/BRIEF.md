@@ -32,8 +32,9 @@ lui, est fixe : l'IA accélère, Axel décide et répond du résultat.
 ## Concept
 
 - **Intro** : une montre à gousset futuriste. Le visiteur appuie sur le poussoir du
-  chronographe, le boîtier s'ouvre, la caméra plonge dans le mécanisme. Jouée une seule
-  fois, sautable, plafonnée à 2 s.
+  chronographe et la montre s'assemble, de l'état Avant à l'état Pendant (voir
+  `MONTRE.md` § Budget). En SVG + GSAP, sans 3D. Jouée une seule fois, sautable,
+  plafonnée à 2 s.
 - **Site** : la couronne devient une molette de temps (draggable, doublée d'un contrôle
   clavier ; trois onglets sur mobile). Chaque position est une époque **du projet du
   client**. L'esthétique entière change d'une époque à l'autre, et **la montre elle-même
@@ -87,10 +88,10 @@ sans témoin.
 
 ## Contraintes
 
-- Contenu réel (offres, contact, preuves) en HTML indexable ; WebGL en couche
-  d'enrichissement.
+- Contenu réel (offres, contact, preuves) en HTML indexable ; l'animation (SVG + GSAP)
+  en couche d'enrichissement. Pas de WebGL.
 - Intro sautable, non rejouée à la deuxième visite.
-- Fallback statique propre sans WebGL et sous `prefers-reduced-motion`.
+- Fallback statique propre sans JavaScript et sous `prefers-reduced-motion`.
 - Mobile : intro allégée, molette remplacée par trois onglets — glisser sur un cercle au
   pouce est trop imprécis.
 - Thème sombre par défaut, clair par toggle. Le choix persiste et s'applique avant le
@@ -102,5 +103,4 @@ sans témoin.
 - ⚠ Les offres réelles affichées dans « Après » : noms, contenus, prix.
 - ⚠ L'email et le téléphone de contact.
 - ⚠ La preuve client.
-- ⚠ Ce que l'intro montre de l'assemblage de la montre (`MONTRE.md` § Budget).
 - 3 à 5 références Awwwards annotées — ce qui plaît : rythme, transition, typo.

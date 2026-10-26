@@ -4,6 +4,9 @@ Statut : audit et plan, aucune ligne de code. Ce document **ne décide rien**. L
 marqués **→ Axel** attendent sa réponse ; ne les tranche pas en code. Les décisions de
 `CLAUDE.md` priment sur ce fichier.
 
+**Décisions d'Axel appliquées dans les docs (26/10)** : pas de three.js ni de WebGL, intro
+1 → 2 seulement, barre du haut unique. Elles règlent C1, C3 et C6, et une partie de C2.
+
 Méthode : la géométrie du SVG est calculée, pas estimée ; le rendu est mesuré dans Chromium
 (Playwright) avec GSAP 3.15. WebKit et Gecko n'ont **pas** été testés : seul Chromium est
 disponible dans l'environnement de développement. Le test sur iPhone n'est donc pas optionnel.
@@ -15,7 +18,7 @@ disponible dans l'environnement de développement. Le test sur iPhone n'est donc
 Plusieurs viennent de la v0 du brief (antérieure à Claude Design) : la v1 a changé le
 concept mais a gardé des phrases écrites pour l'ancien.
 
-### C1 — Trois intros différentes → Axel
+### C1 — Trois intros différentes · ✓ réglé (pas de three.js, intro 1 → 2)
 - `BRIEF.md` § Concept : « le boîtier s'ouvre, la caméra plonge dans le mécanisme ». Phrase
   héritée de la v0, pensée pour du WebGL.
 - `MONTRE.md` § Budget : l'intro est **l'assemblage des calques** (1 → 2, ou complet).
@@ -26,6 +29,8 @@ Proposition : l'intro = appui sur le poussoir, puis assemblage 1 → 2 en SVG (o
 Retirer « le boîtier s'ouvre, la caméra plonge » du brief.
 
 ### C2 — Molette par défaut sur « Après » contre récit de construction → Axel
+L'intro 1 → 2 est décidée. Restent ouverts : la justification de l'option 1, et le moment
+du passage 2 → 3.
 - Avec le défaut sur Après, le visiteur arrive sur la montre **complète** (état 3, cyan
   présent). Son premier geste sur la molette l'amène à Pendant : la montre **perd** son cyan
   et un calque. Hors intro, la construction ne se voit qu'à l'envers.
@@ -42,7 +47,7 @@ Proposition : assumer cette lecture et réécrire la justification de l'option 1
 s'arrête sur l'état 2 ; la recoloration 2 → 3 (0,8 s) se joue **après** l'affichage du hero,
 quand le contenu est déjà lisible. Elle ne compte donc pas dans les 2 s.
 
-### C3 — « la barre du haut des trois heros » → Axel
+### C3 — « la barre du haut des trois heros » · ✓ réglé (barre unique)
 La table des décisions de `CLAUDE.md` (ligne Toggle) parle de trois heros ; le hero est
 double. C'est un reste des artboards. Proposition : « dans la barre du haut, commune à
 l'intro et au hero ».
@@ -78,7 +83,9 @@ Proposition :
 - Le poussoir du SVG devient un vrai `<button>` « Arrêter / relancer le chrono ». C'est le
   mécanisme de pause exigé par la 2.2.2, et il appartient à l'objet.
 
-### C6 — WebGL, un fantôme de la v0 → Axel (touche `CLAUDE.md`)
+### C6 — WebGL, un fantôme de la v0 · ✓ réglé (pas de three.js)
+Appliqué : les fallbacks visent « sans JavaScript ». La vérification 3 devient « JavaScript
+désactivé », et l'absence de contexte WebGL reste testée en non-régression.
 La v0 prévoyait « variables CSS + shader de transition ». La v1 a retiré le shader du
 concept mais a gardé :
 - « WebGL en couche d'enrichissement » (`BRIEF.md`, `CLAUDE.md`) ;
@@ -308,8 +315,9 @@ Vérification de fin :
 - Migration vérifiée sur iPhone (WebKit).
 
 ### T5 — Intro
-Contenu : une seule fois, sautable (bouton, lien, Échap), 2 s au plus, poussoir actif au
-premier frame, passage de la montre dans le hero par Flip.
+Contenu : assemblage 1 → 2 seulement, une seule fois, sautable (bouton, lien, Échap), 2 s
+au plus, poussoir actif au premier frame, passage de la montre dans le hero par Flip. Le
+passage 2 → 3 attend la réponse à C2.
 
 Vérification de fin :
 - Deuxième visite : pas d'intro.
@@ -331,7 +339,7 @@ Vérification de fin :
 - Un résumé contenant du HTML s'affiche en texte brut.
 
 ### T7 — Passe finale
-- Les six vérifications de `CLAUDE.md`, la n° 3 selon la réponse à C6.
+- Les six vérifications de `CLAUDE.md`.
 - iPhone (WebKit) et Android (Chrome) réels.
 - Lighthouse sur la production.
 - Retrait de la basic auth et du `noindex` **seulement** une fois les placeholders

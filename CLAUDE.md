@@ -23,10 +23,10 @@ et `docs/BRIEF.md` (contenu et positionnement) avant d'écrire du code.
 
 **Architecture**
 - Le contenu réel (accroche, offres, preuves, contact) est en **HTML indexable**.
-  WebGL et GSAP sont une couche d'enrichissement, jamais le support du contenu.
+  L'animation (SVG + GSAP) est une couche d'enrichissement, jamais le support du contenu.
   Conséquence : rendu statique ou serveur, pas une SPA rendue côté client.
-- Fallback propre sans WebGL et sous `prefers-reduced-motion` : pas de shader, pas
-  de parallaxe, transitions en fondu court. Le site reste entièrement utilisable.
+- Fallback propre sans JavaScript et sous `prefers-reduced-motion` : pas de parallaxe,
+  transitions en fondu court. Le site reste entièrement utilisable.
 - Aucune animation ne bloque l'accès au contact ou au contenu.
 - L'intro est sautable et ne se rejoue pas à la deuxième visite.
 
@@ -45,12 +45,14 @@ et `docs/BRIEF.md` (contenu et positionnement) avant d'écrire du code.
 | Sujet | Décision |
 |---|---|
 | Hero | **Hero double.** Intro à la première visite, hero de conversion ensuite. |
+| Intro | Joue l'assemblage **1 → 2 seulement**, 2 s au plus. Voir `docs/MONTRE.md` § Budget. |
+| Rendu | **Pas de three.js, pas de WebGL.** La montre et l'intro sont en SVG + GSAP. |
 | Époques | Le projet **du client** : avant / pendant / après. Pas le CV d'Axel. |
 | Molette | Position par défaut au chargement : **Après**. |
 | Thème | **Sombre par défaut**, `prefers-color-scheme` ignoré au premier chargement. Clair accessible par toggle. |
 | Accent sombre | Cyan `#3FE0F0`. |
 | Accent clair | Brique `#B84A3B`, accent unique du thème clair. |
-| Toggle | Second poussoir du chronographe, en capsule 54×46, dans la barre du haut des trois heros. Doublé d'une entrée en mots dans le menu de la couronne. |
+| Toggle | Second poussoir du chronographe, en capsule 54×46, dans la **barre du haut, unique**, commune à l'intro et au hero. Doublé d'une entrée en mots dans le menu de la couronne. |
 | Typographie | Space Grotesk + JetBrains Mono. Deux familles, pas de serif. |
 | Montre | Régulateur sur boîtier travaillé. Un seul sous-cadran, à 6 h. Secondes au centre. |
 | Construction | La montre gagne des calques d'une époque à l'autre. Voir `docs/MONTRE.md`. |
@@ -63,13 +65,15 @@ et `docs/BRIEF.md` (contenu et positionnement) avant d'écrire du code.
   aucun chiffre avant/après. Le module « Dernière veille » prouve qu'Axel suit
   l'actualité, pas qu'il livre. C'est le manque le plus coûteux du projet.
 - Le sous-titre définitif (la piste actuelle est dans `docs/BRIEF.md`).
-- Le budget de l'assemblage dans l'intro (voir `docs/MONTRE.md`, § Budget).
+- Le passage de l'état 2 (fin de l'intro) à l'état 3 (hero, molette sur Après), et la
+  justification de l'intro 1 → 2 (voir `docs/MONTRE.md` § Budget, `docs/PLAN.md` C2).
 
 ## Vérifications avant de considérer une tâche terminée
 
 1. Contraste : chaque paire texte/fond mesurée, pas estimée.
 2. `prefers-reduced-motion: reduce` : aucune animation en boucle ne subsiste.
-3. WebGL désactivé : la page reste complète et lisible.
+3. JavaScript désactivé : la page reste complète et lisible. Aucun contexte WebGL n'est
+   créé (non-régression).
 4. Largeur 390 px : aucun débordement horizontal, aucun titre qui casse mal.
 5. Thème : le choix persiste et s'applique **avant le premier paint** (pas de flash).
 6. Le HTML servi contient le texte des offres et du contact (vérifier en « voir la source »,

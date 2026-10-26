@@ -121,20 +121,27 @@ soit pile sur une graduation (18 = 3 × 6°). Si tu changes cette position, gard
 multiple de 6°, sinon l'aiguille s'arrête entre les repères à chaque pas — invisible
 sur un rendu fixe, mais ça fait « pas fini » dès que l'animation tourne.
 
-## Budget de l'intro — à trancher avec Axel
+## Budget de l'intro — décidé : 1 → 2 seulement
 
 Le plafond de l'intro est de **2 s** entre l'appui sur le poussoir et l'affichage du hero
 (voir `DESIGN.md`). L'assemblage complet Avant → Après ne tient pas dedans : il faut
-3 à 4 s pour que la migration des aiguilles soit lisible. Trois sorties, aucune n'est
-prise :
+3 à 4 s pour que la migration des aiguilles soit lisible.
 
-1. **L'intro joue 1 → 2 seulement.** Le cyan devient la récompense du premier tour de
-   molette. Tient dans le budget, et donne une raison concrète de toucher la molette.
-   *C'est l'option recommandée.*
-2. **L'intro joue l'assemblage complet en accéléré.** Tient dans le budget mais la
-   migration des aiguilles devient illisible, donc le temps fort est gâché.
-3. **L'intro passe à 3,5 s.** L'effet est complet, au prix en conversion que le hero
-   double cherchait justement à éviter.
+**Décision d'Axel : l'intro joue 1 → 2 seulement**, en SVG + GSAP. La migration des
+aiguilles garde le temps d'être lisible, et le cyan n'apparaît pas dans l'intro.
+
+Écartées :
+- l'assemblage complet en accéléré : tient dans le budget, mais la migration des
+  aiguilles devient illisible, donc le temps fort est gâché ;
+- une intro de 3,5 s : l'effet est complet, au prix en conversion que le hero double
+  cherchait justement à éviter.
+
+⚠ **Reste ouvert** (voir `PLAN.md`, C2) :
+- La justification d'origine, « le cyan devient la récompense du premier tour de
+  molette », ne tient pas : la molette est sur Après au chargement, donc le cyan est
+  déjà affiché avant tout geste.
+- L'intro finit sur l'état 2 et le hero affiche l'état 3. Le moment où se joue le
+  passage 2 → 3 n'est pas décidé.
 
 ## Montre et thème clair
 
@@ -147,6 +154,6 @@ sur cet asset, et il est connu.
 
 ## Fallback statique
 
-Sans WebGL ou sous `prefers-reduced-motion` : sers le SVG avec `#l2` et `#l3` à
+Sans JavaScript ou sous `prefers-reduced-motion` : sers le SVG avec `#l2` et `#l3` à
 `opacity: 1`, `#hands-central` déjà transformé, et aucune animation. L'état final est
 complet et lisible sans une seule ligne de JavaScript.
