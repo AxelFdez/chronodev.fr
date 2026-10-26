@@ -2,11 +2,23 @@
  * Couleurs de la montre par thème (docs/MONTRE.md § Montre et thème clair) et par état.
  * Le boîtier laiton garde ses teintes dans les deux thèmes ; changent le cadran, les
  * graduations, les sous-cadrans, les aiguilles et l'accent.
+ *
+ * États : --w-p2 (matière et instrument) et --w-p3 (accent) valent 0 ou 1. Le CSS les pose
+ * selon data-etat (sans JavaScript) ; la timeline GSAP les anime ensuite en style inline.
+ * Les couleurs changent par fondu croisé entre deux tracés, jamais par interpolation de
+ * couleur : le thème peut changer à tout moment, et l'accent reste un vrai var(--accent).
  */
+.boite {
+  position: relative;
+}
+
 .watch {
   display: block;
   inline-size: 100%;
   block-size: auto;
+
+  --w-p2: 1;
+  --w-p3: 1;
 
   --w-dial: var(--surface);
   --w-tick-major-1: #3a4049;
@@ -20,6 +32,15 @@
   --w-hand-hour: #b8893b;
   --w-hand-minute: #d9b26a;
   --w-seconds-2: #d9b26a; /* laiton à l'état 2 : aucun pixel d'accent avant l'état 3 */
+}
+
+.watch[data-etat='1'] {
+  --w-p2: 0;
+  --w-p3: 0;
+}
+
+.watch[data-etat='2'] {
+  --w-p3: 0;
 }
 
 :global(:root[data-theme='light']) .watch {
@@ -42,11 +63,35 @@
   display: none;
 }
 
+/* --- Présences --- */
+
+.l2 {
+  opacity: var(--w-p2);
+}
+
+.l3 {
+  opacity: var(--w-p3);
+}
+
+.filet {
+  opacity: calc(var(--w-p3) * 0.28);
+}
+
+.tick180 {
+  opacity: calc(1 - var(--w-p2));
+}
+
+/* --- Couleurs --- */
+
 .dial {
   fill: var(--w-dial);
 }
 
-.ticksMajor {
+.ticksMajor1 {
+  stroke: var(--w-tick-major-1);
+}
+
+.ticksMajor2 {
   stroke: var(--w-tick-major);
 }
 
@@ -101,35 +146,54 @@
 }
 
 .seconds {
-  stroke: var(--accent);
-}
-
-.cap {
-  fill: var(--accent);
-}
-
-/* --- États (MONTRE.md § Les trois calques) --- */
-
-.watch[data-etat='1'] .l2,
-.watch[data-etat='1'] .l3,
-.watch[data-etat='2'] .l3 {
-  opacity: 0;
-}
-
-.watch[data-etat='1'] .ticksMajor {
-  stroke: var(--w-tick-major-1);
-}
-
-.watch:not([data-etat='1']) .tick180 {
-  opacity: 0;
-}
-
-.watch[data-etat='2'] .seconds {
   stroke: var(--w-seconds-2);
 }
 
-.watch[data-etat='2'] .cap {
+.secondsAccent {
+  stroke: var(--accent);
+  opacity: var(--w-p3);
+}
+
+.cap {
   fill: var(--w-seconds-2);
+}
+
+.capAccent {
+  fill: var(--accent);
+  opacity: var(--w-p3);
+}
+
+/* --- Poussoir : 200 ms enfoncé, 400 ms retour en back.out(1.7) (DESIGN.md § Motion) --- */
+
+.poussoir {
+  transition: transform var(--dur-release) var(--ease-back-out);
+}
+
+/* Une translation pure : aucune origine de transformation en jeu (PLAN.md S10). */
+.watch[data-appui] .poussoir {
+  transform: translate(-2.5px, 2.5px);
+  transition-duration: var(--dur-press);
+  transition-timing-function: var(--ease-power2-out);
+}
+
+.chrono {
+  position: absolute;
+  /* Centre du poussoir (291.8, 188.2) dans le viewBox 0 41 380 412. */
+  left: 76.8%;
+  top: 35.7%;
+  inline-size: 48px;
+  block-size: 48px;
+  margin: -24px 0 0 -24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Sans JavaScript, le chrono ne bouge pas : rien à arrêter. */
+:global(:root:not([data-js])) .chrono {
+  display: none;
 }
 
 /* --- Couronne : la molette au pointeur --- */
@@ -143,5 +207,12 @@
     pointer-events: auto;
     cursor: ew-resize;
     touch-action: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poussoir,
+  .watch[data-appui] .poussoir {
+    transition: none;
   }
 }

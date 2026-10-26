@@ -58,6 +58,8 @@ et `docs/BRIEF.md` (contenu et positionnement) avant d'écrire du code.
 | Typographie | Space Grotesk + JetBrains Mono. Deux familles, pas de serif. |
 | Montre | Régulateur sur boîtier travaillé. Un seul sous-cadran, à 6 h. Secondes au centre. |
 | Construction | La montre gagne des calques d'une époque à l'autre. Voir `docs/MONTRE.md`. |
+| Heure | Aiguilles à l'heure réelle du visiteur ; jour/nuit piloté par l'heure locale (pas par le thème). |
+| Chrono | Le poussoir de la montre est un vrai bouton « Arrêter le chrono » (pause, WCAG 2.2.2). Sous `prefers-reduced-motion`, chrono arrêté, trotteuse à 0. |
 
 ## Points encore ouverts — demande, n'invente pas
 

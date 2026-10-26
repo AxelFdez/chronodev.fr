@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { hydrated, storeTheme } from './helpers';
+import { DIX_HEURES, hydrated, montreAuRepos, storeTheme } from './helpers';
 
 // Captures à LIRE avant de conclure une tranche : artifacts/screens/.
 // Sans JavaScript, le thème clair est impossible (il dépend du script) : seul le sombre existe.
@@ -26,6 +26,7 @@ for (const [name, viewport] of Object.entries(viewports)) {
       });
       const page = await context.newPage();
       if (js) await storeTheme(page, theme);
+      await page.clock.setFixedTime(DIX_HEURES); // captures reproductibles
       for (const [chemin, nom] of [
         ['/', 'accueil'],
         ['/mentions-legales/', 'mentions'],
@@ -49,10 +50,15 @@ for (const [name, viewport] of Object.entries(viewports)) {
         const context = await browser.newContext({ viewport });
         const page = await context.newPage();
         await storeTheme(page, theme);
+        // GSAP lit Date.now() : l'horloge doit avancer pendant l'animation, puis on la fige
+        // à une heure connue pour une capture reproductible.
+        await page.clock.install({ time: DIX_HEURES });
         await page.goto('/');
         await hydrated(page);
         await page.evaluate(() => document.fonts.ready);
         await page.getByRole('radio', { name: NOMS[epoque] }).click();
+        await montreAuRepos(page);
+        await page.clock.pauseAt(new Date(DIX_HEURES.getTime() + 60_000));
         await page.locator('#epoques').evaluate((e) => e.scrollIntoView({ block: 'start' }));
         await page.screenshot({ path: `artifacts/screens/epoque-${name}-${theme}-${epoque}.png` });
         await context.close();

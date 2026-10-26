@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { comparerCaptures, hydrated, storeTheme } from './helpers';
+import { comparerCaptures, hydrated, montreAuRepos, storeTheme } from './helpers';
 
 // Tranche 3 : molette sans animation — époques, montre pilotée, grain, menu.
 
@@ -122,6 +122,7 @@ test.describe('aucun accent avant l’époque 3 (MONTRE.md, DESIGN.md)', () => {
       );
       for (const epoque of ['avant', 'pendant'] as const) {
         await radio(page, epoque).click();
+        await montreAuRepos(page);
         const fautes = await page.evaluate((accentHex) => {
           const probe = document.createElement('i');
           probe.style.color = accentHex;
@@ -169,6 +170,13 @@ test.describe('le grain se voit, plus en Avant qu’en Pendant, pas en Après', 
       const zone = { x: 0, y: 120, width: 760, height: 360 };
       const capture = async (epoque: Epoque) => {
         await radio(page, epoque).click();
+        // Le grain passe en fondu (1,2 s) : on attend son opacité finale.
+        await page.waitForFunction((e) => {
+          const grain = getComputedStyle(document.querySelector('main > div[aria-hidden]')!);
+          const racine = getComputedStyle(document.documentElement);
+          const cible = e === 'apres' ? '0' : racine.getPropertyValue(`--grain-${e}`).trim();
+          return Number(grain.opacity) === Number(cible);
+        }, epoque);
         await page.evaluate(() => window.scrollTo(0, 0));
         return page.screenshot({ clip: zone });
       };

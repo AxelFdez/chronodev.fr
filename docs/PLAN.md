@@ -53,7 +53,7 @@ La table des décisions de `CLAUDE.md` (ligne Toggle) parle de trois heros ; le 
 double. C'est un reste des artboards. Proposition : « dans la barre du haut, commune à
 l'intro et au hero ».
 
-### C4 — L'indicateur jour/nuit viole la règle des compteurs → Axel
+### C4 — L'indicateur jour/nuit viole la règle des compteurs · ✓ réglé (heure locale)
 - `MONTRE.md` le dit « réel, piloté par le toggle de thème », et pose la règle « un
   compteur = une donnée réelle **et non redondante** ».
 - Le thème se voit sur toute la page. Un indicateur qui le répète est redondant, selon
@@ -64,7 +64,7 @@ l'intro et au hero ».
 
 Proposition : jour/nuit = heure locale (jour de 6 h à 18 h). Le thème reste sur le poussoir.
 
-### C5 — « Temps réel » contre le SVG et le fallback → Axel (touche `MONTRE.md`)
+### C5 — « Temps réel » contre le SVG et le fallback · ✓ réglé (proposition acceptée, voir `MONTRE.md` § Trotteuse)
 - La trotteuse en CSS démarre au chargement de la page et n'est pas synchronisée sur
   l'horloge. Elle est dessinée à 18° : synchronisée, elle afficherait 3 s d'avance.
 - Les aiguilles h/m sont dessinées à une heure impossible : heures à 35,0° (1 h 10),
@@ -334,7 +334,7 @@ Pour la tranche 4 : l'état de la montre se lit sur le radio coché, via `useSyn
 dans `Watch.tsx`. La timeline GSAP jouera les passages d'état ; le changement instantané
 reste la règle sous reduced-motion.
 
-### T4 — Montre animée
+### T4 — Montre animée · ✓ livrée (test iPhone : Axel)
 Contenu :
 - Timeline maîtresse, migration avec `svgOrigin`, recoloration 2 → 3 par variable.
 - Temps réel par délais négatifs, branche reduced-motion.
@@ -347,6 +347,31 @@ Vérification de fin :
   captures sont déterministes.
 - Sous reduced-motion : `document.getAnimations()` est vide et aucun tween GSAP ne tourne.
 - Migration vérifiée sur iPhone (WebKit).
+
+Ce qui a changé par rapport au plan, et pourquoi :
+- **Pas de délais négatifs en CSS** pour l'heure réelle. Les aiguilles tournent par
+  l'attribut `transform` : on évite la question S10 sur WebKit, et `page.clock` de
+  Playwright contrôle `Date` et les minuteurs, ce qui rend les tests et les captures
+  déterministes. Un script inline met la montre à l'heure avant le premier paint.
+- **Pas d'interpolation de couleur.** La timeline anime deux présences numériques,
+  `--w-p2` et `--w-p3`. Les couleurs changent par fondu croisé entre deux tracés : avec
+  `color-mix()`, la valeur calculée sort en `color(srgb …)`, et le test « aucun accent
+  avant l'état 3 » serait devenu aveugle.
+- **GSAP est chargé à la demande**, après l'hydratation, et pas du tout sous mouvement
+  réduit. Lighthouse reste à 96 en médiane.
+- **Sous reduced-motion, la règle testée est celle de `DESIGN.md`** : ni boucle, ni
+  mouvement, seulement des fondus courts (≤ 250 ms). Exiger `getAnimations()` vide était
+  plus strict que la règle : les onglets et le grain gardent un fondu court.
+- GSAP lit le temps via `Date.now()` : `page.clock.setFixedTime` le gèle. Les tests qui
+  animent laissent donc l'horloge avancer, et les captures la figent après l'animation.
+
+Tests de garde vérifiés par mutation, sur un build qui compile vraiment (une première
+tentative avait échoué au typage, et les tests avaient tourné sur le code sain) : script
+d'heure retiré, durée ramenée à 0,3 s, pause ignorée. Le test de pause a dû être renforcé :
+arrêté, le minuteur ne repasse qu'à la minute.
+
+Pour la tranche 5 : la timeline vit dans `lib/montre-animation.ts` (labels `avant`,
+`pendant`, `apres`). L'intro jouera `avant` → `pendant` sur la même instance.
 
 ### T5 — Intro
 Contenu : assemblage 1 → 2 seulement, une seule fois, sautable (bouton, lien, Échap), 2 s

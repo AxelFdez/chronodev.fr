@@ -7,6 +7,14 @@
   pointer-events: none;
   opacity: 0;
   background: repeating-linear-gradient(to bottom, var(--grain-teinte) 0 1px, transparent 1px 3px);
+  /* Suit la montre : changement d'époque en 1,2 s, power2.inOut (DESIGN.md § Motion). */
+  transition: opacity 1.2s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain {
+    transition-duration: 200ms; /* fondu court */
+  }
 }
 
 :global(:root:has(input[name='epoque'][value='avant']:checked)) .grain {

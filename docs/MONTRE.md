@@ -66,7 +66,10 @@ gsap.to('#tick-180',    { opacity: 0, duration: 0.3 });   // masqué par le sous
 
 ### `#l3` — Après · `opacity: 0 → 1`
 
-- `#daynight` : l'indicateur jour/nuit à 12 h — **réel**, piloté par le toggle de thème
+- `#daynight` : l'indicateur jour/nuit à 12 h — **réel**, piloté par l'**heure locale** du
+  visiteur (décision d'Axel, `PLAN.md` C4). Un disque tourne en 24 h, sa moitié pleine en
+  haut à midi. Le sous-cadran affiche 12 h : c'est le jour/nuit qui lève l'ambiguïté
+  entre 3 h et 15 h.
 - le filet clair intérieur de lunette
 - et deux recolorations :
 ```js
@@ -105,7 +108,7 @@ invisible à cette taille.
 |---|---|---|
 | Centre | les secondes, au pas d'une seconde | oui, l'heure système |
 | 6 h | heures et minutes | oui |
-| 12 h (état 3) | jour / nuit | oui, dès que le toggle de thème existe |
+| 12 h (état 3) | jour / nuit | oui, l'heure locale (jour de 6 h à 18 h) |
 
 Ont été **retirés**, et ne doivent pas revenir sans une donnée nouvelle :
 
@@ -120,13 +123,21 @@ densité que les données autorisent, ni plus ni moins.
 
 ## Trotteuse
 
-Rotation par **pas d'une seconde**, pas en balayage continu :
+Rotation par **pas d'une seconde**, pas en balayage continu.
 
-```css
-@keyframes montre-sec { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-#hand-seconds { animation: montre-sec 60s steps(60) infinite; transform-origin: 190px 290px; }
-@media (prefers-reduced-motion: reduce) { #hand-seconds { animation: none; } }
-```
+**Décidé (`PLAN.md` C5), implémenté en tranche 4 :**
+- **Heure réelle.** Les aiguilles sont dessinées à 0°, puis orientées par l'attribut
+  `transform="rotate(a 190 290)"`, sans transformation CSS (voir S10). Un script inline
+  placé juste après la montre les met à l'heure avant le premier paint. Ensuite, un
+  minuteur aligné sur la seconde avance la trotteuse d'un pas : aucune animation CSS, et
+  pas de boucle `requestAnimationFrame`.
+- **Pause (WCAG 2.2.2).** Le poussoir de 1 h 30 est un vrai `<button>` « Arrêter le
+  chrono » (`aria-pressed`). Arrêté, la trotteuse se fige ; relancé, elle reprend
+  l'heure réelle. Les heures et les minutes continuent : c'est l'heure.
+- **`prefers-reduced-motion`.** Le chrono démarre arrêté, trotteuse garée à 0 : une
+  aiguille de chrono au repos repose à 0, c'est un état vrai. Heures, minutes et
+  jour/nuit sont mis à jour une fois par minute, par saut. Le visiteur peut relancer le
+  chrono.
 
 Une aiguille qui glisse en continu sur un cadran de cette taille, au milieu d'un hero,
 capte l'attention en permanence. Un pas à 1 Hz est perceptible sans être intrusif, et
@@ -174,3 +185,7 @@ sur cet asset, et il est connu.
 Sans JavaScript ou sous `prefers-reduced-motion` : sers le SVG avec `#l2` et `#l3` à
 `opacity: 1`, `#hands-central` déjà transformé, et aucune animation. L'état final est
 complet et lisible sans une seule ligne de JavaScript.
+
+Sans JavaScript, la montre affiche une pose fixe (1 h 25 min 03 s) : l'heure réelle
+demande un script. Sous `prefers-reduced-motion`, les changements d'époque sont
+instantanés, sans aucune interpolation.

@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { comparerCaptures, hydrated, storeTheme } from './helpers';
+import { comparerCaptures, hydrated, MIDI, storeTheme } from './helpers';
 
 // Tranche 2 : hero de conversion, montre statique corrigée, contact, mentions légales.
 
@@ -47,6 +47,11 @@ test('valeur manquante : affichée en texte, pas de lien cassé', async ({ page 
 });
 
 test.describe('Montre', () => {
+  // Midi : trotteuse et aiguilles vers le haut, positions connues pour les tests de calques.
+  test.beforeEach(async ({ page }) => {
+    await page.clock.setFixedTime(MIDI);
+  });
+
   test('instance unique, décorative, sans élément focalisable ni id en double', async ({
     page,
   }) => {
@@ -99,11 +104,7 @@ test.describe('Montre', () => {
   test('la trotteuse passe au-dessus du jour/nuit, à toute seconde (S4)', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await page.evaluate(() =>
-      document
-        .querySelector('[data-part="trotteuse"]')!
-        .setAttribute('transform', 'rotate(0 190 290)'),
-    );
+    await hydrated(page); // à midi pile, la trotteuse est à 0° : elle traverse le jour/nuit
     expect(await auPremierPlan(page, 190, 215)).toBe('trotteuse');
     expect(await auPremierPlan(page, 190, 245)).toBe('trotteuse');
   });
@@ -126,7 +127,9 @@ test.describe('Montre', () => {
   test('couleurs par thème : cyan en sombre, brique et cadran blanc en clair', async ({ page }) => {
     const couleurs = () =>
       page.evaluate(() => ({
-        trotteuse: getComputedStyle(document.querySelector('[data-part="trotteuse"]')!).stroke,
+        trotteuse: getComputedStyle(
+          document.querySelector('[data-part="trotteuse"] [data-couleur="accent"]')!,
+        ).stroke,
         cadran: getComputedStyle(document.querySelector('svg[data-etat] circle[r="112"]')!).fill,
       }));
     await page.goto('/');
@@ -169,7 +172,10 @@ for (const [nom, viewport] of [
       await page.goto('/');
       if (javaScriptEnabled) await hydrated(page);
       await page.evaluate(() => document.fonts.ready);
-      const image = await page.locator('main').screenshot();
+      // La montre est à l'heure réelle avec JS, en pose fixe sans : on la masque.
+      const image = await page
+        .locator('main')
+        .screenshot({ mask: [page.locator('svg[data-etat]')] });
       await context.close();
       return image;
     };

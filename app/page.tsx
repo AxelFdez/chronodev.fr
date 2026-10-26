@@ -2,6 +2,7 @@ import { ContactValue } from '@/components/ContactValue';
 import { Epoques } from '@/components/epoques/Epoques';
 import { Watch } from '@/components/watch/Watch';
 import { contact, site } from '@/content/site';
+import { HORLOGE_SCRIPT } from '@/lib/horloge';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -28,6 +29,8 @@ export default function Home() {
         <div className={styles.montre}>
           <div className={styles.montreCollante}>
             <Watch />
+            {/* À l'heure avant le premier paint, sans attendre React (lib/horloge.ts). */}
+            <script dangerouslySetInnerHTML={{ __html: HORLOGE_SCRIPT }} />
           </div>
         </div>
 

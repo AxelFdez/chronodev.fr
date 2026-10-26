@@ -1,6 +1,14 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { collectErrors, DARK_BG, hydrated, LIGHT_BG, pageBackground, storeTheme } from './helpers';
+import {
+  animationsInterdites,
+  collectErrors,
+  DARK_BG,
+  hydrated,
+  LIGHT_BG,
+  pageBackground,
+  storeTheme,
+} from './helpers';
 
 // CLAUDE.md § Vérifications — tranche 1 (socle). Les numéros renvoient à cette liste.
 
@@ -188,22 +196,7 @@ test.describe('prefers-reduced-motion (vérification 2)', () => {
     await page.mouse.down();
     const pressed = await page.evaluate(() => document.getAnimations().length);
     await page.mouse.up();
-    const offending = await page.evaluate(() =>
-      document.getAnimations().flatMap((a) => {
-        const timing = a.effect!.getComputedTiming();
-        const property =
-          'transitionProperty' in a
-            ? String(a.transitionProperty)
-            : Object.keys((a.effect as KeyframeEffect).getKeyframes()[0] ?? {}).join(',');
-        const problems = [];
-        if (timing.iterations === Infinity) problems.push('boucle');
-        const mouvement =
-          /^(transform|translate|rotate|scale|offset.*|inset.*|top|right|bottom|left|margin.*|width|height)$/;
-        if (property.split(',').some((p) => mouvement.test(p.trim()))) problems.push('mouvement');
-        if (Number(timing.duration) > 250) problems.push(`durée ${timing.duration} ms`);
-        return problems.length ? [`${property} : ${problems.join(', ')}`] : [];
-      }),
-    );
+    const offending = await animationsInterdites(page);
     expect(pressed, 'l’appui sur le poussoir ne doit rien animer').toBe(0);
     expect(offending).toEqual([]);
   });
