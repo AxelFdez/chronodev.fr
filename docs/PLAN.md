@@ -5,7 +5,8 @@ marqués **→ Axel** attendent sa réponse ; ne les tranche pas en code. Les d�
 `CLAUDE.md` priment sur ce fichier.
 
 **Décisions d'Axel appliquées dans les docs (26/10)** : pas de three.js ni de WebGL, intro
-1 → 2 seulement, barre du haut unique. Elles règlent C1, C3 et C6, et une partie de C2.
+1 → 2 seulement, barre du haut unique, polices via `next/font`. Elles règlent C1, C3, C6
+et C10, et une partie de C2.
 
 Méthode : la géométrie du SVG est calculée, pas estimée ; le rendu est mesuré dans Chromium
 (Playwright) avec GSAP 3.15. WebKit et Gecko n'ont **pas** été testés : seul Chromium est
@@ -125,7 +126,7 @@ haut ne changent pas. Le contact est toujours dans le hero, et détaillé dans A
 Proposition : séparer les deux rôles. La couronne du SVG est la molette. Le menu est un
 vrai `<button aria-expanded>` dans la barre du haut.
 
-### C10 — Google Fonts et RGPD → Axel (contredit la lettre de `DESIGN.md`)
+### C10 — Google Fonts et RGPD · ✓ réglé (`next/font`, appliqué dans `DESIGN.md`)
 - `DESIGN.md` : « un seul `<link>` `fonts.googleapis.com` ».
 - Charger les polices depuis les serveurs de Google transmet l'IP du visiteur sans
   consentement. Le LG München I l'a sanctionné le 20 janvier 2022 (3 O 17493/20). Axel
@@ -202,7 +203,7 @@ sous-cadran et 8,0 px du jour/nuit. Les valeurs de `MONTRE.md` § Repère sont j
   poussoir avant l'hydratation (« cliquable au premier frame »).
 - **Styles.** `styles/tokens.css` reprend les tokens de `DESIGN.md` mot pour mot ; un CSS
   Module par composant. Pas de Tailwind, pour ne pas ajouter un second système de tokens.
-- **Polices.** `next/font/google`, auto-hébergées, sous réserve de C10.
+- **Polices.** `next/font/google`, auto-hébergées (voir `DESIGN.md` § Typographie).
 - **Époque : une seule source de vérité.** `<fieldset>` + trois `<input type="radio"
   name="epoque">` + `<label>`, Après coché par défaut. Grâce à `:has()`, la section change
   de panneau **sans JS**. Sur desktop, la couronne est un habillage piloté par GSAP

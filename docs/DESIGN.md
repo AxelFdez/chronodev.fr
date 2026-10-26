@@ -110,8 +110,20 @@ Les deux lectures sont enveloppées dans un `try/catch` (navigation privée, sto
 - Deux familles maximum. **Pas de serif**, décidé : une troisième famille, et un
   basculement serif vers sans lirait comme un changement de marque, pas de temps.
   La matière de l'époque 1 vient du laiton et du grain, pas de la typo.
-- Chargement : un seul `<link>` `fonts.googleapis.com/css2` avec `display=swap`.
-  Fallback de métriques proches : `'Helvetica Neue', Arial, sans-serif` et `ui-monospace`.
+- Chargement : **`next/font/google`**, auto-hébergé. Les fichiers sont téléchargés au
+  build et servis depuis chronodev.fr ; le navigateur du visiteur n'envoie aucune requête
+  à Google (RGPD, voir `PLAN.md` C10). Pas de `<link>` vers `fonts.googleapis.com`, pas de
+  `preconnect`, et `font-src 'self'` dans la CSP.
+- Réglages : `subsets: ['latin']` (couvre le français : accents, œ, « », espaces fines),
+  `display: 'swap'`. Les polices sont exposées en variables CSS `--font-sans` et
+  `--font-mono` sur `<html>`. Les deux familles sont variables : un seul fichier chacune.
+  Les graisses listées plus haut sont celles qu'on utilise, pas des fichiers à charger.
+- Préchargement : Space Grotesk seulement, puisqu'elle porte le `h1` du hero. JetBrains
+  Mono en `preload: false`, sauf si un texte mono apparaît au-dessus de la ligne de
+  flottaison.
+- Repli : `next/font` génère une police de repli aux métriques ajustées
+  (`adjustFontFallback`) pour limiter le décalage au chargement. Pile déclarée derrière :
+  `'Helvetica Neue', Arial, sans-serif` et `ui-monospace, monospace`.
 
 ## Grain
 
