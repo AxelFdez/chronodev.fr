@@ -68,7 +68,9 @@ lui, est fixe : l'IA accélère, Axel décide et répond du résultat.
 **◐ C'est le manque le plus coûteux du projet, et aucun artboard ne le comble.**
 
 L'état actuel : un module « Dernière veille » alimenté par n8n (flux filtrés + résumé LLM),
-qui se masque si la dernière entrée a plus de quelques semaines.
+qui se masque si la dernière entrée a plus de **21 jours**. Chaque résumé est **validé par
+Axel dans n8n** avant publication : rien de non relu ne sort sous son nom. Le module a son
+propre titre, distinct de « Preuves » (voir `VEILLE.md`).
 
 Ce module prouve qu'Axel suit l'actualité. Il ne prouve pas qu'il livre. Une PME qui hésite
 à confier un budget ne se demande pas si son prestataire lit des flux RSS — elle se demande

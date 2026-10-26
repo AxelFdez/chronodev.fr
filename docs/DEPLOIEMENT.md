@@ -25,6 +25,18 @@ HTTP basique, ajoutée côté Traefik dans les réglages de sécurité de l'appl
 avec `ROBOTS_TAG` à sa valeur par défaut. On retire la protection et on passe
 `ROBOTS_TAG=all` et `PRODUCTION=1` en même temps, quand Axel a fourni toutes les valeurs.
 
+## Veille (`docs/VEILLE.md`)
+
+Le site lit `/veille/derniere.json`. En production, ce dossier est un **volume** monté
+par-dessus celui de l'image :
+- dans Dokploy, application du site : montage du dossier hôte `/srv/chronodev/veille`
+  sur `/usr/share/nginx/html/veille`, en **lecture seule** ;
+- côté n8n : le même dossier hôte, en écriture.
+
+Le dossier doit contenir dès le départ un `derniere.json` sans entrée (copie de
+`public/veille/derniere.json`). Sinon, la requête renvoie une 404, que le navigateur
+signale dans la console : le module reste masqué, mais Lighthouse pénalise l'erreur.
+
 ## Vérifier un déploiement
 
 ```sh

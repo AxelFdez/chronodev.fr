@@ -99,3 +99,41 @@ for (const [name, viewport] of Object.entries(viewports)) {
     });
   }
 }
+
+// Le module « Dernière veille » affiché (entrée d'essai), dans l'époque Après.
+for (const [name, viewport] of Object.entries(viewports)) {
+  for (const theme of ['dark', 'light'] as const) {
+    test(`capture veille ${name}-${theme}`, async ({ browser }) => {
+      const context = await browser.newContext({ viewport, storageState: INTRO_VUE });
+      const page = await context.newPage();
+      await storeTheme(page, theme);
+      await page.clock.setFixedTime(new Date('2026-10-26T12:00:00Z'));
+      await page.route('**/veille/derniere.json', (route) =>
+        route.fulfill({
+          contentType: 'application/json',
+          body: JSON.stringify({
+            version: 1,
+            entree: {
+              date: '2026-10-20',
+              titre: 'Titre d’essai',
+              resume: 'Résumé d’essai, en texte brut, pour vérifier la mise en page.',
+              source: { nom: 'Source d’essai', url: 'https://exemple.org/article' },
+              validee: { par: 'Axel', le: '2026-10-21T08:00:00Z' },
+            },
+          }),
+        }),
+      );
+      await page.goto('/');
+      await hydrated(page);
+      await page.evaluate(() => document.fonts.ready);
+      const bloc = page.locator('section[aria-labelledby="veille-titre"]');
+      await bloc.evaluate((e) => e.scrollIntoView({ block: 'center' }));
+      // Le module apparaît en fondu (250 ms) : on capture une fois l'animation finie.
+      await page.waitForFunction(() =>
+        document.getAnimations().every((a) => a.playState !== 'running'),
+      );
+      await page.screenshot({ path: `artifacts/screens/veille-${name}-${theme}.png` });
+      await context.close();
+    });
+  }
+}

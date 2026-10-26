@@ -1,0 +1,71 @@
+/* Mêmes cartes que la section des époques ; l'accent signale une donnée « en direct »
+   (DESIGN.md § Règle d'usage) et n'apparaît qu'ici, à l'époque 3. */
+.veille {
+  display: grid;
+  gap: 16px;
+  animation: apparition 250ms var(--ease-power2-out);
+}
+
+.titre {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-brass);
+}
+
+.carte {
+  display: grid;
+  gap: 8px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.direct {
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.sujet {
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+.source a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--accent);
+}
+
+.mention {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+@keyframes apparition {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .veille {
+    animation: none;
+  }
+}

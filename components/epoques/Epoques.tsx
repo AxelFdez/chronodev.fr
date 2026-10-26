@@ -1,5 +1,6 @@
 import { apres, avant, EPOQUE_PAR_DEFAUT, EPOQUES, pendant } from '@/content/epoques';
 import { site } from '@/content/site';
+import { Veille } from '@/components/veille/Veille';
 import styles from './Epoques.module.css';
 
 /**
@@ -83,6 +84,9 @@ export function Epoques() {
           <p>{apres.preuve.client}</p>
           <p>{apres.preuve.resultat}</p>
         </div>
+        {/* Sous son propre titre, jamais sous « Preuves » (BRIEF.md § Preuve). Avant le CTA,
+            qui reste le dernier élément de l'époque ; apparaît sous la ligne de flottaison. */}
+        <Veille />
         <a className={styles.cta} href="#contact">
           {site.cta}
         </a>

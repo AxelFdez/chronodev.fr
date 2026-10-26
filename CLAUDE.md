@@ -60,6 +60,7 @@ et `docs/BRIEF.md` (contenu et positionnement) avant d'écrire du code.
 | Construction | La montre gagne des calques d'une époque à l'autre. Voir `docs/MONTRE.md`. |
 | Heure | Aiguilles à l'heure réelle du visiteur ; jour/nuit piloté par l'heure locale (pas par le thème). |
 | Chrono | Le poussoir de la montre est un vrai bouton « Arrêter le chrono » (pause, WCAG 2.2.2). Sous `prefers-reduced-motion`, chrono arrêté, trotteuse à 0. |
+| Veille | Résumés LLM **validés par Axel dans n8n** avant publication. Module masqué au-delà de **21 jours**, et au moindre doute (échec fermé). Jamais présenté comme une preuve. Voir `docs/VEILLE.md`. |
 
 ## Points encore ouverts — demande, n'invente pas
 

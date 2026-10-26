@@ -17,6 +17,10 @@ try {
   run('npm', ['run', 'check:placeholders']);
   await withServer(async () => {
     run('npx', ['playwright', 'test']);
+    // Lighthouse simule un CPU bridé à partir des temps mesurés : juste après la suite de
+    // tests, la machine encore chargée fausse la mesure (constaté : 90 au lieu de 97).
+    console.log('\n… 15 s de repos avant Lighthouse');
+    await new Promise((r) => setTimeout(r, 15_000));
     run('node', ['scripts/lighthouse.mjs']);
   });
   console.log(

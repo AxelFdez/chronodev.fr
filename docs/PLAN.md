@@ -137,7 +137,7 @@ vrai `<button aria-expanded>` dans la barre du haut.
 
 Proposition : passer par `next/font`.
 
-### C11 — Le module veille publie du texte de LLM non relu → Axel
+### C11 — Le module veille publie du texte de LLM non relu · ✓ réglé (validation dans n8n, seuil 21 jours)
 - `BRIEF.md` : « flux filtrés + résumé LLM », publiés automatiquement.
 - Le positionnement dit : « l'IA accélère, Axel décide et répond du résultat ».
 - Publier sous son nom des résumés que personne n'a relus est l'exact contre-exemple de son
@@ -421,7 +421,7 @@ Lighthouse mesure désormais une **première visite**, donc l'écran d'intro : m
 LCP 1,7 s. Le hero de conversion, lui, est couvert par le test LCP de Playwright, qui
 simule un visiteur ayant déjà vu l'intro.
 
-### T6 — Module Dernière veille
+### T6 — Module Dernière veille · ✓ livrée (workflow n8n et volume : Axel)
 Contenu : schéma du JSON (date ISO, titre, résumé, URL de la source), récupération côté
 client, échec fermé, seuil `[SEUIL_JOURS]`. Le workflow n8n vit hors du repo et est
 documenté.
@@ -431,6 +431,28 @@ Vérification de fin :
   « frais ».
 - CLS sous 0,1.
 - Un résumé contenant du HTML s'affiche en texte brut.
+
+Ce qui a été livré :
+- **Côté site.** `lib/veille.ts` valide strictement le fichier publié et
+  `components/veille/Veille.tsx` l'affiche. Le module est placé dans Après, sous son propre
+  titre « Dernière veille », après les preuves et avant le CTA. Le fichier livré avec le
+  site ne contient aucune entrée : pas de 404, donc pas d'erreur dans la console.
+- **Échec fermé.** Il suffit d'un des cas suivants pour que rien ne s'affiche :
+  - version inconnue, champ manquant ou trop long ;
+  - source qui n'est pas en `https:` ;
+  - validation humaine absente ;
+  - entrée de plus de 21 jours, comptés en jours calendaires, ou datée dans le futur ;
+  - réponse au-delà de 3 s.
+- **Mention affichée :** « Résumé rédigé avec l'IA, relu et validé par Axel le … ».
+  Elle est vraie par construction, puisque la validation est obligatoire.
+- **Documentation.** `docs/VEILLE.md` décrit le workflow n8n, avec sa validation humaine
+  et son écriture atomique, et donne le schéma JSON (`docs/veille.schema.json`).
+  `docs/DEPLOIEMENT.md` décrit le volume partagé.
+- **Tests** : 24, dont les gardes vérifiées par mutation (validation ignorée, HTML
+  interprété, seuil à 30 jours, délai supprimé).
+
+Outillage : `verify` laisse 15 s de repos avant Lighthouse. Juste après la suite de
+tests, la machine encore chargée faisait tomber la médiane à 93, contre 97 au repos.
 
 ### T7 — Passe finale
 - Les six vérifications de `CLAUDE.md`.
