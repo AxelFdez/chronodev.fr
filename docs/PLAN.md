@@ -454,12 +454,36 @@ Ce qui a été livré :
 Outillage : `verify` laisse 15 s de repos avant Lighthouse. Juste après la suite de
 tests, la machine encore chargée faisait tomber la médiane à 93, contre 97 au repos.
 
-### T7 — Passe finale
+### T7 — Passe finale · ✓ partie vérifiable ici ; appareils et mise en ligne : Axel
 - Les six vérifications de `CLAUDE.md`.
 - iPhone (WebKit) et Android (Chrome) réels.
 - Lighthouse sur la production.
 - Retrait de la basic auth et du `noindex` **seulement** une fois les placeholders
   remplis : la garde `PRODUCTION=1` l'impose.
+
+Fait :
+- **`tests/final.spec.ts`** reprend les six vérifications là où les tranches ne les
+  couvraient qu'en partie :
+  - 390 et 360 px sur toutes les pages, les trois époques et l'intro, avec un nouveau
+    test qui détecte un mot de titre coupé sur deux lignes ;
+  - sans JavaScript sur les mentions légales et la 404 ;
+  - axe avec le menu ouvert et sur la 404 ;
+  - un parcours complet sous mouvement réduit ;
+  - le thème conservé d'une page à l'autre sans flash ;
+  - la CSP stricte, l'absence de cartes de sources, `robots.txt` et `sitemap.xml` ;
+  - une console sans erreur.
+- **Image Docker reconstruite** (Docker Hub limitait les téléchargements anonymes : passage
+  par le miroir `mirror.gcr.io` dans le bac à sable seulement). **Toute la suite de
+  comportement passe contre ce nginx de production.**
+- **Garde de production** démontrée : `PRODUCTION=1` refuse l'export, avec la liste des 15
+  valeurs manquantes.
+- **Lighthouse** sur les mentions légales : 99, 100, 100, 100.
+- **`docs/MISE-EN-LIGNE.md`** : l'audit avec ses preuves, le contenu manquant, le protocole
+  pour les vrais appareils, le test à froid et la bascule en production.
+
+Non fait : les tests WebKit. Le navigateur n'est pas installé ici, et la consigne de
+l'environnement interdit de le faire avec `playwright install`. L'iPhone reste le seul
+juge.
 
 ---
 

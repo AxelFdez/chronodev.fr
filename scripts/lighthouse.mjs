@@ -10,6 +10,10 @@ import { BASE_URL, withServer } from './lib.mjs';
 
 const BUDGET = { performance: 0.95, accessibility: 1, 'best-practices': 1, seo: 1 };
 const RUNS = 5;
+// Chemin à mesurer : la page d'accueil par défaut (`node scripts/lighthouse.mjs /mentions-legales/`).
+const CHEMIN = process.argv[2] ?? '/';
+const RAPPORT =
+  CHEMIN === '/' ? 'mobile' : `mobile${CHEMIN.replace(/\/+$/, '').replace(/\//g, '-')}`;
 const TIMEOUT_MS = 120_000; // un Chrome bloqué fait échouer la vérification, pas l'attendre
 
 async function passage() {
@@ -18,7 +22,7 @@ async function passage() {
     chromeFlags: ['--headless=new', '--no-sandbox'],
   });
   try {
-    const run = lighthouse(`${BASE_URL}/`, {
+    const run = lighthouse(`${BASE_URL}${CHEMIN}`, {
       port: chrome.port,
       output: 'html',
       logLevel: 'error',
@@ -41,7 +45,7 @@ await withServer(async () => {
   resultats.sort((a, b) => a.lhr.categories.performance.score - b.lhr.categories.performance.score);
   const { lhr, report } = resultats[Math.floor(RUNS / 2)];
   await mkdir('artifacts/lighthouse', { recursive: true });
-  await writeFile('artifacts/lighthouse/mobile.html', report);
+  await writeFile(`artifacts/lighthouse/${RAPPORT}.html`, report);
 
   const tous = resultats.map((r) => Math.round(r.lhr.categories.performance.score * 100));
   let failed = 0;
