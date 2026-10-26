@@ -1,0 +1,39 @@
+/*
+ * Tokens de couleur — recopiés de docs/DESIGN.md, ne pas modifier ici sans remesurer
+ * les contrastes (npm run check:contrast) et mettre à jour DESIGN.md.
+ */
+:root,
+:root[data-theme='dark'] {
+  --bg: #0b0d10;
+  --surface: #12161b;
+  --border: #262b33;
+  --text: #e8e6e1;
+  --text-muted: #8a8f98;
+  --brass: #b8893b; /* encre ET matière en sombre */
+  --brass-light: #d9b26a;
+  --accent: #3fe0f0;
+  --accent-ink: #0b0d10; /* texte posé sur --accent */
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg: #f6f5f2;
+  --surface: #ffffff;
+  --border: #ddd7ca;
+  --text: #16181c;
+  --text-muted: #5e636b;
+  --brass: #7a5a1e; /* encre uniquement */
+  --brass-light: #c9a05a; /* matière uniquement, jamais du texte */
+  --accent: #b84a3b;
+  --accent-ink: #ffffff; /* texte posé sur --accent */
+  color-scheme: light;
+}
+
+/* Motion — docs/DESIGN.md § Motion. Équivalents CSS des easings GSAP. */
+:root {
+  --ease-power2-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-back-out: cubic-bezier(0.175, 0.885, 0.32, 1.275); /* back.out(1.7) */
+  --dur-micro: 200ms;
+  --dur-press: 200ms;
+  --dur-release: 400ms;
+}

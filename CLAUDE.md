@@ -68,6 +68,16 @@ et `docs/BRIEF.md` (contenu et positionnement) avant d'écrire du code.
 - Le passage de l'état 2 (fin de l'intro) à l'état 3 (hero, molette sur Après), et la
   justification de l'intro 1 → 2 (voir `docs/MONTRE.md` § Budget, `docs/PLAN.md` C2).
 
+## Commandes
+
+- `npm run dev` : serveur de développement.
+- `npm run build` : export statique dans `out/`, puis calcul de la CSP (`build/csp/`).
+- `npm run serve` : sert `out/` comme nginx en production (en-têtes, CSP, gzip).
+- `npm run verify` : lint, build, types, contrastes, valeurs manquantes, tests Playwright
+  (dont axe), Lighthouse mobile. Les captures vont dans `artifacts/screens/` : les **lire**
+  avant de déclarer une tâche terminée. Le test sur un vrai téléphone reste manuel.
+- Déploiement : `docs/DEPLOIEMENT.md`.
+
 ## Vérifications avant de considérer une tâche terminée
 
 1. Contraste : chaque paire texte/fond mesurée, pas estimée.

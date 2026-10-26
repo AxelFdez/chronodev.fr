@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+build
+artifacts
+test-results
+playwright-report
+.git
+docs

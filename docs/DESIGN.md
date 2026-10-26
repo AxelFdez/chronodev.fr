@@ -91,7 +91,7 @@ premier chargement. Le choix du visiteur persiste et **doit s'appliquer avant le
 paint**, sinon un visiteur en clair reçoit un flash de fond noir à chaque visite :
 
 ```html
-<!-- dans <head>, inline, bloquant, avant toute feuille de style -->
+<!-- dans <head>, inline, bloquant : ni async, ni defer, ni src -->
 <script>
   try {
     var t = localStorage.getItem('chronodev-theme');
@@ -102,6 +102,15 @@ paint**, sinon un visiteur en clair reçoit un flash de fond noir à chaque visi
 
 Deux drapeaux en stockage local : `chronodev-theme` et `chronodev-intro-vue`.
 Les deux lectures sont enveloppées dans un `try/catch` (navigation privée, stockage bloqué).
+Si le stockage est illisible, l'intro n'est **pas** jouée : elle ne pourrait jamais être
+marquée comme vue, et se rejouerait à chaque visite.
+
+Implémentation : `lib/html-state.ts`, qui pose aussi `data-js` et `data-intro` sur `<html>`.
+React 19 range les feuilles de style **avant** ce script dans `<head>`, et on ne peut pas
+changer cet ordre sans retoucher le HTML généré. C'est sans conséquence : le navigateur ne
+rend rien avant d'avoir atteint `<body>`, et le script s'exécute pendant l'analyse du
+`<head>`. C'est vérifié par un test : CSS et JS retardés de 800 ms, le premier frame est déjà
+en thème clair, avant le chargement de React.
 
 ## Typographie
 

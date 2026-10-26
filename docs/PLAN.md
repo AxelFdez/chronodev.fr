@@ -246,7 +246,7 @@ sous-cadran et 8,0 px du jour/nuit. Les valeurs de `MONTRE.md` § Repère sont j
 La correction des calques (S1, S4, S5, S8, S9, S11) passe de la tranche 4 à la **tranche 2** :
 l'état final statique est cassé en l'état. La tranche 4 garde l'animation et le temps réel.
 
-### T1 — Socle
+### T1 — Socle · ✓ livrée
 Contenu :
 - Next en export statique, tokens, polices.
 - Script de `<head>` (thème + intro), barre du haut avec la capsule de thème 54×46
@@ -254,10 +254,11 @@ Contenu :
 - Dockerfile, `nginx.conf`, squelette de `npm run verify`.
 
 Vérification de fin :
-- `out/index.html` existe ; le script de thème précède toute feuille de style (test qui
-  analyse le HTML).
-- Thème clair en stockage : le premier frame (screencast CDP) ne contient aucun pixel
-  `#0B0D10`.
+- Le HTML servi contient le contenu ; le script de thème est inline et bloquant dans
+  `<head>`. React 19 place les feuilles de style avant lui : voir `DESIGN.md` § Bascule
+  de thème.
+- Thème clair en stockage, CSS et JS retardés de 800 ms : au premier frame, le fond est
+  déjà clair et React n'est pas chargé.
 - Stockage qui lève une exception (navigation privée) : la page s'affiche en sombre, sans
   erreur.
 - Un script recalcule les ratios de contraste depuis `tokens.css` et échoue sous 4.5:1.
@@ -324,7 +325,8 @@ Vérification de fin :
 - Deuxième visite : pas d'intro.
 - Entre le clic sur le poussoir et le hero visible : 2 000 ms au plus (marques
   `performance`).
-- Stockage bloqué : l'intro se joue, se saute, et rien ne casse.
+- Stockage bloqué : l'intro n'est pas jouée (décidé en T1, voir `DESIGN.md`), et rien ne
+  casse.
 - Sous reduced-motion : fondu court ou intro sautée.
 - LCP en première visite comparé à la référence de T4 (`lhci`).
 
