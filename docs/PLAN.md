@@ -566,3 +566,12 @@ Vérifié par mutation dans l'image du runner :
 | Lettrage des `h2` modifié avec JavaScript | 2 185 | 71 |
 | CTA du hero décalé d'un pixel | 2 012 | 71 |
 | Hero rétréci | LCP « hors hero H3 », échec | — |
+
+**Deuxième passage : `verify` vert, un échec contre nginx.** Le test « thème clair conservé
+sur les mentions légales, dès le premier frame » notait la couleur de fond dans un
+`requestAnimationFrame`, puis la lisait dès que `goto` rendait la main. Or `goto` rend la
+main à l'événement « load », que rien n'oblige à suivre le premier frame. Avec nginx (rapide,
+compressé), la valeur n'existait pas encore. Reproduit en local contre nginx, rarement (1 fois
+sur 28). Le helper `valeurDuPremierFrame` attend désormais que la valeur existe. Deux autres
+tests « dès le premier frame » (thème avant React, montre à l'heure) avaient le même défaut,
+latent : corrigés de la même façon.

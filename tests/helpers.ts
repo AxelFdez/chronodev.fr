@@ -21,6 +21,19 @@ export async function hydrated(page: Page) {
   });
 }
 
+/**
+ * Lit une valeur qu'un script d'init a posée sur window au premier frame. `goto` rend la
+ * main au « load », qui peut précéder ce frame (constaté contre nginx en CI) : on attend
+ * que la valeur existe.
+ */
+export async function valeurDuPremierFrame<T>(page: Page, cle: string): Promise<T> {
+  const valeur = await page.waitForFunction(
+    (k) => (window as unknown as Record<string, unknown>)[k],
+    cle,
+  );
+  return (await valeur.jsonValue()) as T;
+}
+
 export const pageBackground = (page: Page) =>
   page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor);
 

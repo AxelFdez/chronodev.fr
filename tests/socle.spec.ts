@@ -8,6 +8,7 @@ import {
   LIGHT_BG,
   pageBackground,
   storeTheme,
+  valeurDuPremierFrame,
 } from './helpers';
 import { PREMIERE_VISITE } from './etat-initial';
 
@@ -94,9 +95,7 @@ test.describe('Thème (vérification 5)', () => {
       });
     });
     await page.goto('/');
-    const first = await page.evaluate(
-      () => (window as unknown as { __firstFrame: object }).__firstFrame,
-    );
+    const first = await valeurDuPremierFrame(page, '__firstFrame');
     expect(first).toEqual({ theme: 'light', background: LIGHT_BG, reactLoaded: false });
   });
 

@@ -9,6 +9,7 @@ import {
   LIGHT_BG,
   montreAuRepos,
   storeTheme,
+  valeurDuPremierFrame,
 } from './helpers';
 
 // Tranche 7 : passe finale. Les six vérifications de CLAUDE.md, sur toutes les pages et
@@ -155,9 +156,7 @@ test('thème clair : conservé sur les mentions légales, dès le premier frame'
     });
   });
   await page.goto('/mentions-legales/');
-  expect(await page.evaluate(() => (window as unknown as { __fond: string }).__fond)).toBe(
-    LIGHT_BG,
-  );
+  expect(await valeurDuPremierFrame(page, '__fond')).toBe(LIGHT_BG);
 });
 
 // --- Vérification 6 : le HTML servi, tel quel ---

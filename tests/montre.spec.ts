@@ -1,5 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
-import { angle, animationsInterdites, DIX_HEURES, hydrated, MIDI, montreAuRepos } from './helpers';
+import {
+  angle,
+  animationsInterdites,
+  DIX_HEURES,
+  hydrated,
+  MIDI,
+  montreAuRepos,
+  valeurDuPremierFrame,
+} from './helpers';
 
 // Tranche 4 : montre animée — heure réelle, chrono, timeline des époques.
 // À 10 h 08 min 30 s : heures 304°, minutes 51°, trotteuse 180°, jour/nuit -62°.
@@ -33,7 +41,7 @@ test('à l’heure dès le premier frame, avant React', async ({ page }) => {
     requestAnimationFrame(observer);
   });
   await page.goto('/');
-  const premier = await page.evaluate(() => (window as unknown as { __premier: object }).__premier);
+  const premier = await valeurDuPremierFrame(page, '__premier');
   expect(premier).toEqual({
     heures: 'rotate(304 190 290)',
     minutes: 'rotate(51 190 290)',
