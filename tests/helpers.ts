@@ -31,8 +31,8 @@ export async function storeTheme(page: Page, theme: 'light' | 'dark') {
 
 /**
  * Compare deux captures PNG, décodées dans une page vierge (sans CSP). Renvoie l'écart
- * moyen par canal et le nombre de pixels qui diffèrent de plus de 2 niveaux (au-delà du
- * bruit d'anticrénelage du moteur de rendu).
+ * moyen par canal, le nombre de pixels qui diffèrent de plus de 2 niveaux (au-delà du
+ * bruit d'anticrénelage du moteur de rendu) et le nombre total de pixels.
  */
 export async function comparerCaptures(browser: Browser, a: Buffer, b: Buffer) {
   const page = await browser.newPage();
@@ -48,7 +48,8 @@ export async function comparerCaptures(browser: Browser, a: Buffer, b: Buffer) {
         return ctx.getImageData(0, 0, img.width, img.height).data;
       };
       const [pa, pb] = await Promise.all([pixels(a), pixels(b)]);
-      if (pa.length !== pb.length) return { moyen: Infinity, pixelsDifferents: Infinity };
+      const total = pa.length / 4;
+      if (pa.length !== pb.length) return { moyen: Infinity, pixelsDifferents: Infinity, total };
       let somme = 0;
       let pixelsDifferents = 0;
       for (let i = 0; i < pa.length; i += 4) {
@@ -56,7 +57,7 @@ export async function comparerCaptures(browser: Browser, a: Buffer, b: Buffer) {
         somme += d[0] + d[1] + d[2];
         if (Math.max(...d) > 2) pixelsDifferents++;
       }
-      return { moyen: somme / (pa.length / 4) / 3, pixelsDifferents };
+      return { moyen: somme / total / 3, pixelsDifferents, total };
     },
     [a.toString('base64'), b.toString('base64')],
   );

@@ -148,22 +148,28 @@ for (const [nom, viewport] of [
   ['mobile', { width: 390, height: 844 }],
   ['desktop', { width: 1440, height: 900 }],
 ] as const) {
-  test(`${nom} : le plus grand élément affiché (LCP) est l’accroche, pas la montre`, async ({
+  test(`${nom} : le plus grand élément affiché (LCP) est le texte du hero, pas la montre`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
     await page.goto('/');
     await page.evaluate(() => document.fonts.ready);
+    // À 390 px, accroche et sous-titre ont presque la même surface : selon le moteur de rendu,
+    // le sous-titre tient sur 2 ou 3 lignes et passe devant (constaté sur le runner de CI).
+    // Les deux sont dans le HTML et peints au premier rendu ; seule compte leur nature.
     const element = await page.evaluate(
       () =>
         new Promise<string>((resolve) => {
           new PerformanceObserver((list) => {
             const entries = list.getEntries() as (PerformanceEntry & { element?: Element })[];
-            resolve(entries.at(-1)?.element?.id ?? 'inconnu');
+            const el = entries.at(-1)?.element;
+            if (!el) return resolve('inconnu');
+            const hero = el.closest('section[aria-labelledby="accroche"]') ? 'hero' : 'hors hero';
+            resolve(`${hero} ${el.tagName} « ${el.textContent?.slice(0, 40)} »`);
           }).observe({ type: 'largest-contentful-paint', buffered: true });
         }),
     );
-    expect(element).toBe('accroche');
+    expect(element).toMatch(/^hero (H1|P) /);
   });
 
   test(`${nom} : la page est la même avec ou sans JavaScript`, async ({ browser }) => {
@@ -184,12 +190,17 @@ for (const [nom, viewport] of [
       await context.close();
       return image;
     };
-    const { pixelsDifferents } = await comparerCaptures(
+    const { pixelsDifferents, total } = await comparerCaptures(
       browser,
       await capture(true),
       await capture(false),
     );
-    expect(pixelsDifferents).toBe(0);
+    // Avec JavaScript, Chromium compose autrement (couches « Overlaps other composited
+    // content ») : à mise en page identique, l'anticrénelage de quelques coins arrondis change.
+    // Mesuré sur l'image du runner de CI : 36 pixels au pire, de 360 à 1440 px de large. Une
+    // vraie différence (élément ajouté ou masqué, texte, décalage d'un pixel) en touche des
+    // milliers. Tolérance : 0,01 % des pixels, comme maxDiffPixelRatio chez Playwright.
+    expect(pixelsDifferents).toBeLessThanOrEqual(total * 0.0001);
   });
 }
 

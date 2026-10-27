@@ -533,3 +533,36 @@ Même passe, **test « jamais présenté comme une preuve »** (veille). Il lisa
 la réponse JSON reçue, avant que React ait rendu le module. Démontré sous processeur ralenti
 (×20) : la lecture immédiate échoue 6 fois sur 6, l'assertion à réessai (`toHaveText`)
 passe 6 fois sur 6.
+
+**Premier passage sur GitHub : deux échecs en mobile seulement**, invisibles en local.
+Le bac à sable de développement rend le texte autrement que le runner. Reproduits
+à l'identique dans l'image officielle de Playwright :
+
+```sh
+docker run --rm --network host --ipc=host -v "$PWD":/work -w /work \
+  mcr.microsoft.com/playwright:v1.63.0-noble npx playwright test
+```
+
+L'étiquette de l'image doit suivre la version de `@playwright/test`. C'est le moyen de
+reproduire la CI en local.
+
+- **LCP mobile.** Sur le runner, le sous-titre passe sur 3 lignes : il ne restait que
+  5 px de marge sur sa 2ᵉ ligne. Sa surface (26 752 px²) dépasse alors celle de l'accroche
+  (26 257). Les deux sont du texte du hero, dans le HTML et peints au même rendu. Le test
+  exige désormais « texte du hero (`h1` ou `p`) », plus l'accroche seule. Son message
+  d'échec nomme l'élément.
+- **Page identique avec ou sans JavaScript.** Avec JavaScript, Chromium compose autrement :
+  le grain et le hero deviennent des couches, avec la raison « Overlaps other composited
+  content ». À mise en page identique (positions comparées au millième de pixel),
+  l'anticrénelage de quelques coins arrondis change. Mesuré dans l'image du runner, de 360
+  à 1440 px de large : au pire 36 pixels, avec des écarts jusqu'à 45 niveaux. Aucune
+  transition ni animation ne se lance au chargement : ce n'est pas un défaut du site.
+  Tolérance : 0,01 % des pixels, comme `maxDiffPixelRatio` chez Playwright.
+
+Vérifié par mutation dans l'image du runner :
+
+| Mutation | Pixels différents | Tolérance |
+|---|---|---|
+| Lettrage des `h2` modifié avec JavaScript | 2 185 | 71 |
+| CTA du hero décalé d'un pixel | 2 012 | 71 |
+| Hero rétréci | LCP « hors hero H3 », échec | — |
