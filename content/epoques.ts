@@ -1,5 +1,6 @@
 // Les trois époques du projet du client (BRIEF.md § Les trois époques). Textes d'Axel,
 // mis en forme ; rien n'est ajouté. Offres et preuve : valeurs manquantes entre crochets.
+// Prototype « sections à la suite » : Pendant raccourci, proposition à valider par Axel.
 
 export type EpoqueId = 'avant' | 'pendant' | 'apres';
 
@@ -8,8 +9,6 @@ export const EPOQUES: { id: EpoqueId; libelle: string; etat: 1 | 2 | 3 }[] = [
   { id: 'pendant', libelle: 'Pendant', etat: 2 },
   { id: 'apres', libelle: 'Après', etat: 3 },
 ];
-
-export const EPOQUE_PAR_DEFAUT: EpoqueId = 'apres'; // CLAUDE.md, décision « Molette »
 
 export const avant = {
   titre: 'Aujourd’hui, le temps joue contre vous.',
@@ -29,26 +28,18 @@ export const pendant = {
     { quand: 'À tout moment', quoi: 'un seul interlocuteur.' },
     { quand: 'À la livraison', quoi: 'le code, les accès et la documentation sont à vous.' },
   ],
-  ia: {
-    titre: 'Ce que l’IA accélère',
-    points: [
-      'La mise en place',
-      'Le code répétitif',
-      'Les tests',
-      'Les migrations',
-      'La documentation',
-    ],
-  },
-  humain: {
-    titre: 'Ce qui reste humain',
-    points: [
-      'Le cadrage',
-      'Les arbitrages',
-      'La sécurité et le RGPD',
-      'Ce qu’on refuse de faire',
-      'La responsabilité du résultat',
-    ],
-  },
+  // Deux lignes au lieu de deux listes de cinq. Retirés : « les migrations » (jargon pour
+  // un client) et « ce qu'on refuse de faire » (trop vague sans exemple).
+  partage: [
+    {
+      qui: 'Ce que l’IA accélère',
+      quoi: 'la mise en place, le code répétitif, les tests, la documentation.',
+    },
+    {
+      qui: 'Ce qui reste humain',
+      quoi: 'le cadrage, les arbitrages, la sécurité et le RGPD, la responsabilité du résultat.',
+    },
+  ],
 };
 
 export const apres = {

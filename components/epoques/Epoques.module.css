@@ -1,53 +1,44 @@
 .epoques {
   display: grid;
-  gap: 32px;
   scroll-margin-top: 16px;
 }
 
-/* --- La molette en mots : trois onglets, marqueur sur l'époque active --- */
-
-.molette {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  min-inline-size: 0;
-}
-
-.legende {
-  padding: 0;
-  margin-bottom: 16px;
-}
-
-.legende h2 {
+.titreSection {
   font-size: 1.75rem;
   font-weight: 600;
   letter-spacing: -0.01em;
+  margin-bottom: 16px;
 }
 
-.onglets {
+/* --- Repère : collant en haut de la section, marque l'époque à l'écran --- */
+
+.repere {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin-inline: -16px;
+  padding: 8px 16px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.repere ol {
   display: flex;
   gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.onglet {
-  position: relative;
+.repere li {
   flex: 1 1 0;
 }
 
-/* Le vrai bouton radio reste dans le DOM et focalisable ; son libellé est la cible. */
-.onglet input {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.onglet label {
+.repere a {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 48px;
+  min-height: 44px;
   padding: 0 16px;
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -56,51 +47,64 @@
   font-size: 0.875rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  cursor: pointer;
+  text-decoration: none;
   transition:
     color var(--dur-micro) var(--ease-power2-out),
     border-color var(--dur-micro) var(--ease-power2-out);
 }
 
-.onglet input:hover + label {
+.repere a:hover {
   color: var(--text);
 }
 
-.onglet input:checked + label {
+.repere a[aria-current] {
   border-color: var(--ink-brass);
   color: var(--text);
   box-shadow: inset 0 -3px 0 var(--ink-brass);
 }
 
-.onglet input:focus-visible + label {
+.repere a:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 
 @media (min-width: 600px) {
-  .onglet {
+  .repere li {
     flex: 0 0 auto;
   }
 }
 
-/* --- Panneaux : un seul visible, choisi en CSS (fonctionne sans JS) --- */
+@media (min-width: 900px) {
+  .repere {
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+}
 
-.panneau {
+/* --- Les trois époques, à la suite : le problème, la méthode, puis l'offre --- */
+
+.etape {
   display: grid;
   gap: 24px;
   align-content: start;
+  padding-block: 40px;
+  scroll-margin-top: 72px; /* sous le repère collant */
 }
 
-/* Sans :has(), Après reste affiché : c'est l'époque par défaut. */
-.panneau:not([data-epoque='apres']),
-.epoques:has(input[value='avant']:checked) .panneau[data-epoque='apres'],
-.epoques:has(input[value='pendant']:checked) .panneau[data-epoque='apres'] {
-  display: none;
+.etape + .etape {
+  border-top: 1px solid var(--border);
 }
 
-.epoques:has(input[value='avant']:checked) .panneau[data-epoque='avant'],
-.epoques:has(input[value='pendant']:checked) .panneau[data-epoque='pendant'] {
-  display: grid;
+.etiquette {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-brass);
+}
+
+.etiquette + .titre {
+  margin-top: -12px;
 }
 
 .titre {
@@ -162,6 +166,19 @@
 .partage {
   display: grid;
   gap: 16px;
+  margin: 0;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.partage dt {
+  font-weight: 600;
+}
+
+.partage dd {
+  margin: 4px 0 0;
 }
 
 .carte {
@@ -169,18 +186,6 @@
   border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--surface);
-}
-
-.carte h4 {
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.carte ul {
-  margin: 12px 0 0;
-  padding-left: 20px;
-  display: grid;
-  gap: 6px;
 }
 
 .sousTitre {
@@ -241,7 +246,6 @@
 }
 
 @media (min-width: 700px) {
-  .partage,
   .offres {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

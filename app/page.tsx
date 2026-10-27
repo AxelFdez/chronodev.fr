@@ -18,7 +18,7 @@ export default function Home() {
         </a>
       </div>
 
-      {/* Grain pleine page, sous le contenu ; son intensité suit l'époque cochée (CSS). */}
+      {/* Grain pleine page, sous le contenu ; son intensité suit l'époque à l'écran (CSS). */}
       <div className={styles.grain} aria-hidden="true" />
 
       <div className={styles.scene}>

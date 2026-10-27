@@ -485,6 +485,39 @@ Non fait : les tests WebKit. Le navigateur n'est pas installé ici, et la consig
 l'environnement interdit de le faire avec `playwright install`. L'iPhone reste le seul
 juge.
 
+Test iPhone d'Axel sur l'aperçu Pages (27/10/2026) : les aiguilles tournent autour du bon
+centre (S10 écarté), la migration se fait sans saut, le thème clair s'applique sans éclair.
+
+### Prototype — sections à la suite · branche, en attente de la décision d'Axel
+
+Retour d'Axel après le test iPhone : avec les onglets et Après par défaut, **le visiteur
+lit le résultat avant le problème**. L'ordre d'une page de vente est promesse (le hero),
+problème (Avant), méthode (Pendant), puis offre, preuves et contact (Après). Les onglets
+ne peuvent pas donner à la fois cet ordre et des offres visibles sans clic. Des sections à
+la suite le peuvent.
+
+Ce que fait le prototype :
+- **Avant, Pendant, Après à la suite**, lus en défilant. Sans JavaScript, tout est visible.
+- **L'époque à l'écran** est la section qui croise le milieu de la fenêtre
+  (`IntersectionObserver`, `lib/epoque.ts`), posée sur `<html data-epoque-courante>`.
+  - La montre la suit : complète dans le hero (option B d'Axel, le 2 → 3 après l'intro est
+    gardé), puis 1, 2 et 3 en descendant.
+  - Le grain la suit aussi.
+- **Un repère collant « Avant · Pendant · Après »** remplace le groupe radio : de vraies
+  ancres, avec `aria-current="step"` sur la section à l'écran.
+- **La couronne** fait défiler jusqu'à l'époque voisine.
+- **Pendant raccourci** : les deux listes de cinq puces deviennent deux lignes. « Les
+  migrations » et « ce qu'on refuse de faire » sont retirés. C'est une proposition, à
+  valider ou réécrire par Axel.
+
+Le prix, mesuré : en mobile, « Offres » passe d'environ 1 050 px à 2 161 px du haut de la
+page. Le bouton de contact du hero reste à un toucher.
+
+À faire si le prototype est retenu :
+- tests : époques, montre (timeline), captures, parcours sous mouvement réduit ;
+- contrat (`CLAUDE.md`) : décisions Molette et Portée d'une époque ;
+- docs : `BRIEF.md`, `MONTRE.md`.
+
 ---
 
 ## 5. Boucle de vérification (toutes les tranches)

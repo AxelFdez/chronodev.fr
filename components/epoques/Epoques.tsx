@@ -1,49 +1,50 @@
-import { apres, avant, EPOQUE_PAR_DEFAUT, EPOQUES, pendant } from '@/content/epoques';
+import { apres, avant, pendant } from '@/content/epoques';
 import { site } from '@/content/site';
 import { Veille } from '@/components/veille/Veille';
+import { Repere } from './Repere';
 import styles from './Epoques.module.css';
 
 /**
- * Section des époques. Le groupe radio est la source de vérité : il change de panneau en
- * CSS seul (:has), donc sans JavaScript. La couronne de la montre le pilote au pointeur.
- * Tout le texte des trois époques est dans le HTML servi.
+ * Section des époques, prototype « sections à la suite » : Avant, Pendant et Après se lisent
+ * dans l'ordre en défilant, le problème avant l'offre. La section qui croise le milieu de
+ * l'écran donne l'état de la montre et le grain (lib/epoque.ts). Tout est dans le HTML servi,
+ * et tout est visible sans JavaScript.
  */
 export function Epoques() {
   return (
     <section id="epoques" className={styles.epoques} aria-labelledby="epoques-titre">
-      <fieldset className={styles.molette}>
-        <legend className={styles.legende}>
-          <h2 id="epoques-titre">Votre projet</h2>
-        </legend>
-        <div className={styles.onglets}>
-          {EPOQUES.map(({ id, libelle }) => (
-            <span key={id} className={styles.onglet}>
-              <input
-                type="radio"
-                name="epoque"
-                id={`epoque-${id}`}
-                value={id}
-                defaultChecked={id === EPOQUE_PAR_DEFAUT}
-                // Au rechargement, le navigateur ne doit pas restaurer une autre époque.
-                autoComplete="off"
-              />
-              <label htmlFor={`epoque-${id}`}>{libelle}</label>
-            </span>
-          ))}
-        </div>
-      </fieldset>
+      <h2 id="epoques-titre" className={styles.titreSection}>
+        Votre projet
+      </h2>
+      <Repere />
 
-      <div className={styles.panneau} data-epoque="avant">
-        <h3 className={styles.titre}>{avant.titre}</h3>
+      <section
+        id="epoque-avant"
+        data-epoque="avant"
+        className={styles.etape}
+        aria-labelledby="epoque-avant-titre"
+      >
+        <p className={styles.etiquette}>Avant</p>
+        <h3 id="epoque-avant-titre" className={styles.titre}>
+          {avant.titre}
+        </h3>
         <ul className={styles.constats}>
           {avant.constats.map((c) => (
             <li key={c}>{c}</li>
           ))}
         </ul>
-      </div>
+      </section>
 
-      <div className={styles.panneau} data-epoque="pendant">
-        <h3 className={styles.titre}>{pendant.titre}</h3>
+      <section
+        id="epoque-pendant"
+        data-epoque="pendant"
+        className={styles.etape}
+        aria-labelledby="epoque-pendant-titre"
+      >
+        <p className={styles.etiquette}>Pendant</p>
+        <h3 id="epoque-pendant-titre" className={styles.titre}>
+          {pendant.titre}
+        </h3>
         <dl className={styles.engagements}>
           {pendant.engagements.map(({ quand, quoi }) => (
             <div key={quand}>
@@ -52,22 +53,26 @@ export function Epoques() {
             </div>
           ))}
         </dl>
-        <div className={styles.partage}>
-          {[pendant.ia, pendant.humain].map(({ titre, points }) => (
-            <div key={titre} className={styles.carte}>
-              <h4>{titre}</h4>
-              <ul>
-                {points.map((p) => (
-                  <li key={p}>{p}</li>
-                ))}
-              </ul>
+        <dl className={styles.partage}>
+          {pendant.partage.map(({ qui, quoi }) => (
+            <div key={qui}>
+              <dt>{qui}</dt>
+              <dd>{quoi}</dd>
             </div>
           ))}
-        </div>
-      </div>
+        </dl>
+      </section>
 
-      <div className={styles.panneau} data-epoque="apres">
-        <h3 className={styles.titre}>{apres.titre}</h3>
+      <section
+        id="epoque-apres"
+        data-epoque="apres"
+        className={styles.etape}
+        aria-labelledby="epoque-apres-titre"
+      >
+        <p className={styles.etiquette}>Après</p>
+        <h3 id="epoque-apres-titre" className={styles.titre}>
+          {apres.titre}
+        </h3>
         <h4 className={styles.sousTitre}>Offres</h4>
         <ul className={styles.offres}>
           {apres.offres.map((o) => (
@@ -90,7 +95,7 @@ export function Epoques() {
         <a className={styles.cta} href="#contact">
           {site.cta}
         </a>
-      </div>
+      </section>
     </section>
   );
 }
