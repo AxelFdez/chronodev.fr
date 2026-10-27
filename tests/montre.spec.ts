@@ -175,20 +175,35 @@ test.describe('timeline des époques', () => {
   });
 
   test('à mi-migration, les aiguilles restent au-dessus du cadran (S1)', async ({ page }) => {
+    // Horloge pilotée : l'échantillon tombe au même instant de la migration quelle que soit la
+    // charge. Un délai réel tombait en fin de migration sur une machine chargée : le chapeau y
+    // passe sous l'axe (r 7 au centre), au-dessus de tout par conception.
+    await page.clock.install({ time: DIX_HEURES });
     await page.goto('/');
     await hydrated(page);
     await page.locator('svg[data-gsap]').waitFor({ state: 'attached' });
     await radio(page, 'Pendant').click();
     await montreAuRepos(page);
+    // 10 h 09 min 15 s : la trotteuse pointe à 3 h, hors du trajet vertical des aiguilles (à
+    // 30 s, elle le recouvrait et masquait tout ce qui passe dessous). Toujours dans le futur :
+    // un test dure moins de 30 s.
+    await page.clock.pauseAt(new Date(DIX_HEURES.getTime() + 45_000));
     await radio(page, 'Avant').click();
-    await page.waitForTimeout(600);
-    const dessus = await page.evaluate(() => {
-      const cap = document.querySelector('[data-part="aiguilles"] circle')!;
-      const r = cap.getBoundingClientRect();
+    // La migration occupe environ 450 à 750 ms du changement Pendant → Avant (1,2 s).
+    await page.clock.runFor(600);
+    const { echelle, dessus } = await page.evaluate(() => {
+      const svg = document.querySelector('svg[data-etat]') as SVGSVGElement;
+      const g = document.querySelector('[data-part="aiguilles"]') as SVGGElement;
+      const r = g.querySelector('circle')!.getBoundingClientRect();
       const el = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)!;
-      return el.closest('[data-part]')?.getAttribute('data-part') ?? el.tagName;
+      return {
+        echelle: svg.getScreenCTM()!.inverse().multiply(g.getScreenCTM()!).a,
+        dessus: el.closest('[data-part]')?.getAttribute('data-part') ?? el.tagName,
+      };
     });
-    // La trotteuse et son axe couvrent aussi le centre : seules aiguilles ou trotteuse admises.
-    expect(['aiguilles', 'trotteuse']).toContain(dessus);
+    // Bien à mi-chemin entre 0,35 (sous-cadran) et 1 (centre).
+    expect(echelle).toBeGreaterThan(0.45);
+    expect(echelle).toBeLessThan(0.85);
+    expect(dessus).toBe('aiguilles');
   });
 });

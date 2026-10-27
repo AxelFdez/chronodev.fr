@@ -515,3 +515,21 @@ Lighthouse est exclu de la CI. La performance de l'accueil n'a que 1 à 2 points
 sur son seuil, et un runner partagé fait varier la mesure davantage. Une CI qui passe au
 rouge sans régression apprend à ignorer le rouge. Lighthouse se lance donc en local avec
 `npm run verify` et en production.
+
+Avant le premier push, la chaîne a été rejouée en local, bridée à 2 cœurs pour approcher un
+runner. Elle a révélé que le **test S1** n'était vert que par chance :
+- **Timing.** Il échantillonnait 600 ms après le clic, en temps réel. La migration n'occupe
+  qu'environ 450 à 750 ms du changement : sous charge, l'échantillon tombait en fin de course,
+  où le chapeau des aiguilles passe sous l'axe (au-dessus de tout, par conception).
+- **Angle mort.** À certaines secondes, la trotteuse recouvre le trajet vertical des
+  aiguilles. Elle était admise par le test, qui ne voyait alors plus rien dessous.
+
+Le test pilote désormais l'horloge (`clock.pauseAt` puis `runFor(600)`), à 10 h 09 min 15 s :
+la trotteuse est à 3 h. Il vérifie qu'il échantillonne bien à mi-chemin et exige
+`aiguilles`. Vérifié par mutation : avec les aiguilles placées sous le sous-cadran, il
+échoue en touchant `sous-cadran`.
+
+Même passe, **test « jamais présenté comme une preuve »** (veille). Il lisait les titres dès
+la réponse JSON reçue, avant que React ait rendu le module. Démontré sous processeur ralenti
+(×20) : la lecture immédiate échoue 6 fois sur 6, l'assertion à réessai (`toHaveText`)
+passe 6 fois sur 6.

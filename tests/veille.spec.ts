@@ -63,10 +63,12 @@ test('entrée fraîche et validée : affichée, datée, sourcée, avec la mentio
 
 test('le module n’est jamais présenté comme une preuve', async ({ page }) => {
   await charger(page, fichier(ENTREE));
-  const titres = await page
-    .locator('[data-epoque="apres"] h4')
-    .evaluateAll((h) => h.map((e) => e.textContent));
-  expect(titres).toEqual(['Offres', 'Preuves', 'Dernière veille']);
+  // Assertion à réessai : la réponse reçue ne veut pas dire le module rendu (constaté sous charge).
+  await expect(page.locator('[data-epoque="apres"] h4')).toHaveText([
+    'Offres',
+    'Preuves',
+    'Dernière veille',
+  ]);
 });
 
 test.describe('seuil de 21 jours', () => {
