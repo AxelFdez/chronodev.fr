@@ -9,7 +9,8 @@ export default defineConfig({
   outputDir: 'test-results',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  reporter: [['list']],
+  // En CI, le reporter github place les échecs en annotations sur la PR.
+  reporter: process.env.CI ? [['list'], ['github']] : [['list']],
   use: {
     baseURL: `http://127.0.0.1:${PORT}`,
     browserName: 'chromium',

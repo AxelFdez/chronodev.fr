@@ -503,3 +503,15 @@ juge.
 
 Limite connue : seul Chromium est disponible ici. WebKit se teste sur le téléphone, via
 l'aperçu ; Gecko n'est pas couvert.
+
+**En CI** (`.github/workflows/ci.yml`), à chaque PR et à chaque push sur `main`, un seul job :
+1. `npm run verify -- --sans-lighthouse`, puis les captures en artefact (14 jours).
+2. Construction de l'image Docker, démarrage de nginx. Un garde exige l'en-tête
+   `Server: nginx` : si rien ne répond, Playwright lancerait `serve.mjs` sur le port et
+   testerait le mauvais serveur.
+3. `npx playwright test --grep-invert capture` contre nginx.
+
+Lighthouse est exclu de la CI. La performance de l'accueil n'a que 1 à 2 points de marge
+sur son seuil, et un runner partagé fait varier la mesure davantage. Une CI qui passe au
+rouge sans régression apprend à ignorer le rouge. Lighthouse se lance donc en local avec
+`npm run verify` et en production.

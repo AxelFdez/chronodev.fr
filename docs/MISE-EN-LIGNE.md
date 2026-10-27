@@ -69,6 +69,12 @@ Suivre `docs/DEPLOIEMENT.md` :
   (`noindex`) ;
 - dossier de veille créé sur l'hôte et contenant `derniere.json` sans entrée, puis monté.
 
+Côté GitHub, avant de brancher Dokploy sur `main` :
+- faire de `main` la branche par défaut (Settings → General) ;
+- protéger `main` (Settings → Branches) : PR obligatoire, check **« Vérifier »** requis.
+  Dokploy construit tout ce qui arrive sur `main`, sans regarder la CI. C'est la protection
+  qui garantit que rien n'y arrive sans être passé au vert.
+
 Contrôle :
 ```sh
 curl -sI https://chronodev.fr/ -u identifiant:motdepasse | grep -i -E 'content-security|x-robots|strict-transport'

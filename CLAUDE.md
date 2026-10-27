@@ -83,6 +83,9 @@ et `docs/BRIEF.md` (contenu et positionnement) avant d'écrire du code.
 - `npm run verify` : lint, build, types, contrastes, valeurs manquantes, tests Playwright
   (dont axe), Lighthouse mobile (médiane de 5 passages). Les captures vont dans `artifacts/screens/` : les **lire**
   avant de déclarer une tâche terminée. Le test sur un vrai téléphone reste manuel.
+- CI (`.github/workflows/ci.yml`), à chaque PR et à chaque push sur `main` :
+  `verify --sans-lighthouse`, puis la suite de comportement contre l'image nginx. Lighthouse
+  n'y tourne pas : il reste à lancer en local et en production.
 - Déploiement : `docs/DEPLOIEMENT.md`. Mise en ligne (audit, contenu manquant, appareils,
   bascule) : `docs/MISE-EN-LIGNE.md`.
 

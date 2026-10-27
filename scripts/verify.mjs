@@ -1,6 +1,9 @@
 // Boucle de vérification d'une tranche (docs/PLAN.md § 5). S'arrête au premier échec.
+// --sans-lighthouse : pour la CI, où un runner partagé fait varier la mesure plus que la marge.
 import { spawnSync } from 'node:child_process';
 import { withServer } from './lib.mjs';
+
+const sansLighthouse = process.argv.includes('--sans-lighthouse');
 
 // Lève une erreur plutôt que de quitter : withServer doit pouvoir arrêter son serveur.
 function run(cmd, args) {
@@ -17,6 +20,7 @@ try {
   run('npm', ['run', 'check:placeholders']);
   await withServer(async () => {
     run('npx', ['playwright', 'test']);
+    if (sansLighthouse) return;
     // Lighthouse simule un CPU bridé à partir des temps mesurés : juste après la suite de
     // tests, la machine encore chargée fausse la mesure (constaté : 90 au lieu de 97).
     console.log('\n… 15 s de repos avant Lighthouse');

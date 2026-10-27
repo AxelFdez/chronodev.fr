@@ -1,0 +1,82 @@
+# Vérification à chaque PR et à chaque push sur main : `verify` sans Lighthouse, puis la
+# suite de comportement contre l'image de production (nginx), comme en tranche 7.
+# Lighthouse reste local et en production (docs/PLAN.md § 5) : sur un runner partagé, la
+# mesure varie plus que la marge de l'accueil sur son seuil.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verifier:
+    name: Vérifier
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+    steps:
+      # Actions épinglées par SHA : un tag peut être déplacé, pas un commit.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22 # comme l'image de build (Dockerfile)
+          cache: npm
+
+      - run: npm ci
+
+      - name: Chromium pour Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Lint, build, types, contrastes, valeurs manquantes, tests
+        run: npm run verify -- --sans-lighthouse
+
+      - name: Captures
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: captures
+          path: artifacts/screens/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Image de production
+        run: docker build -t chronodev:ci .
+
+      - name: Démarrer nginx
+        # Si rien ne répond sur ce port, Playwright y lancerait serve.mjs et testerait le
+        # mauvais serveur : on exige l'en-tête de nginx avant de lancer la suite.
+        run: |
+          docker run -d --name chronodev -p 4174:80 chronodev:ci
+          for i in $(seq 50); do
+            curl -sfI http://127.0.0.1:4174/ | grep -qi '^server: nginx' && exit 0
+            sleep 0.2
+          done
+          docker logs chronodev
+          exit 1
+
+      - name: Tests de comportement contre nginx
+        run: npx playwright test --grep-invert capture
+        env:
+          PORT: 4174
+
+      - name: Résultats des tests en échec
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-results
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 14
