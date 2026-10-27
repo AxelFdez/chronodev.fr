@@ -5,7 +5,7 @@
  * confiance.
  */
 
-export const VEILLE_URL = '/veille/derniere.json';
+export const VEILLE_URL = `${process.env.BASE_PATH ?? ''}/veille/derniere.json`;
 export const SEUIL_JOURS = 21; // décision d'Axel (PLAN.md C11)
 export const DELAI_MS = 3000; // au-delà, on abandonne : le module n'est jamais attendu
 

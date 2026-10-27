@@ -30,6 +30,9 @@ export const metadata: Metadata = {
   description: site.accroche,
   // Pas de favicon pour l'instant : évite une 404 à chaque visite.
   icons: { icon: 'data:,' },
+  // Aperçu GitHub Pages : aucun en-tête possible, donc pas de X-Robots-Tag. La balise le
+  // remplace (et non un Disallow dans robots.txt, qui empêcherait de la lire).
+  ...(process.env.APERCU === '1' && { robots: { index: false, follow: false } }),
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
