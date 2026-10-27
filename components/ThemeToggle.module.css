@@ -1,0 +1,63 @@
+/*
+ * Poussoir de thème. Contrastes mesurés (npm run check:contrast) :
+ * pictogramme sur la capsule ≥ 3:1, bord de la capsule sur le fond ≥ 3:1 (WCAG 1.4.11).
+ */
+.pusher {
+  --pusher-hi: var(--brass-light);
+  --pusher-lo: var(--brass);
+  --pusher-edge: color-mix(in srgb, var(--brass) 55%, #000);
+  --pusher-ink: var(--bg);
+
+  display: inline-grid;
+  place-items: center;
+  inline-size: 54px;
+  block-size: 46px;
+  padding: 0;
+  border: 1px solid var(--pusher-edge);
+  border-radius: 23px;
+  background: linear-gradient(180deg, var(--pusher-hi), var(--pusher-lo));
+  color: var(--pusher-ink);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.3),
+    0 3px 0 var(--pusher-edge);
+  cursor: pointer;
+  /* Retour : 400 ms, back.out(1.7) — docs/DESIGN.md § Motion */
+  transition:
+    transform var(--dur-release) var(--ease-back-out),
+    box-shadow var(--dur-release) var(--ease-back-out);
+}
+
+:global(:root[data-theme='light']) .pusher {
+  --pusher-hi: color-mix(in srgb, var(--brass-light) 55%, #fff);
+  --pusher-lo: var(--brass-light);
+  --pusher-edge: var(--brass);
+  --pusher-ink: var(--text);
+}
+
+.pusher:active {
+  /* Enfoncé : 200 ms */
+  transform: translateY(3px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.3),
+    0 0 0 var(--pusher-edge);
+  transition-duration: var(--dur-press);
+  transition-timing-function: var(--ease-power2-out);
+}
+
+.icon {
+  inline-size: 20px;
+  block-size: 20px;
+}
+
+/* Sans JavaScript, le poussoir ne peut rien faire : on le masque sans décaler la barre. */
+:global(:root:not([data-js])) .pusher {
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pusher,
+  .pusher:active {
+    transform: none;
+    transition: none;
+  }
+}

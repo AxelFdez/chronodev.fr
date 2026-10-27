@@ -1,0 +1,34 @@
+.footer {
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+}
+
+.inner a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: inherit;
+  transition: color var(--dur-micro) var(--ease-power2-out);
+}
+
+.inner a:hover {
+  color: var(--accent);
+}
+
+@media (min-width: 768px) {
+  .inner {
+    padding: 16px 32px;
+  }
+}

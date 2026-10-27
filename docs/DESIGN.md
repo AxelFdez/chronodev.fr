@@ -91,7 +91,7 @@ premier chargement. Le choix du visiteur persiste et **doit s'appliquer avant le
 paint**, sinon un visiteur en clair reçoit un flash de fond noir à chaque visite :
 
 ```html
-<!-- dans <head>, inline, bloquant, avant toute feuille de style -->
+<!-- dans <head>, inline, bloquant : ni async, ni defer, ni src -->
 <script>
   try {
     var t = localStorage.getItem('chronodev-theme');
@@ -102,6 +102,15 @@ paint**, sinon un visiteur en clair reçoit un flash de fond noir à chaque visi
 
 Deux drapeaux en stockage local : `chronodev-theme` et `chronodev-intro-vue`.
 Les deux lectures sont enveloppées dans un `try/catch` (navigation privée, stockage bloqué).
+Si le stockage est illisible, l'intro n'est **pas** jouée : elle ne pourrait jamais être
+marquée comme vue, et se rejouerait à chaque visite.
+
+Implémentation : `lib/html-state.ts`, qui pose aussi `data-js` et `data-intro` sur `<html>`.
+React 19 range les feuilles de style **avant** ce script dans `<head>`, et on ne peut pas
+changer cet ordre sans retoucher le HTML généré. C'est sans conséquence : le navigateur ne
+rend rien avant d'avoir atteint `<body>`, et le script s'exécute pendant l'analyse du
+`<head>`. C'est vérifié par un test : CSS et JS retardés de 800 ms, le premier frame est déjà
+en thème clair, avant le chargement de React.
 
 ## Typographie
 
@@ -110,8 +119,21 @@ Les deux lectures sont enveloppées dans un `try/catch` (navigation privée, sto
 - Deux familles maximum. **Pas de serif**, décidé : une troisième famille, et un
   basculement serif vers sans lirait comme un changement de marque, pas de temps.
   La matière de l'époque 1 vient du laiton et du grain, pas de la typo.
-- Chargement : un seul `<link>` `fonts.googleapis.com/css2` avec `display=swap`.
-  Fallback de métriques proches : `'Helvetica Neue', Arial, sans-serif` et `ui-monospace`.
+- Chargement : **`next/font/google`**, auto-hébergé. Les fichiers sont téléchargés au
+  build et servis depuis chronodev.fr ; le navigateur du visiteur n'envoie aucune requête
+  à Google (RGPD, voir `PLAN.md` C10). Pas de `<link>` vers `fonts.googleapis.com`, pas de
+  `preconnect`, et `font-src 'self'` dans la CSP.
+- Réglages : `subsets: ['latin']` (couvre le français : accents, œ, « », espaces fines),
+  `display: 'swap'`. Les polices sont exposées en variables CSS `--font-sans` et
+  `--font-mono` sur `<html>`. Les deux familles sont variables : un seul fichier chacune.
+  Les graisses listées plus haut sont celles qu'on utilise, pas des fichiers à charger.
+- Préchargement : Space Grotesk seulement, puisqu'elle porte le `h1` du hero. JetBrains
+  Mono en `preload: false`, **même** pour le surtitre mono du hero : mesuré en tranche 2,
+  la précharger retarde l'accroche (LCP de 1,8 à 2,5 s, Lighthouse de 98 à 95). Le
+  surtitre s'affiche d'abord dans la police de repli, sans décalage (CLS 0).
+- Repli : `next/font` génère une police de repli aux métriques ajustées
+  (`adjustFontFallback`) pour limiter le décalage au chargement. Pile déclarée derrière :
+  `'Helvetica Neue', Arial, sans-serif` et `ui-monospace, monospace`.
 
 ## Grain
 
@@ -127,6 +149,19 @@ le fond, sous le contenu. L'opacité porte la progression des époques :
 En thème clair, l'opacité et la teinte du grain sont à régler à part : un grain laiton
 clair sur papier clair ne se voit pas. Prévois un réglage par époque **et** par thème.
 
+Réglage retenu (tranche 3, `styles/tokens.css`) :
+
+| Thème | Teinte | Avant | Pendant | Après |
+|---|---|---|---|---|
+| Sombre | `--brass-light` | 4,5 % | 2,2 % | 0 |
+| Clair | `--text` #16181C | 6 % | 3 % | 0 |
+
+Le texte posé sur le grain le plus dense reste au-dessus de 4.5:1 (mesuré par
+`npm run check:contrast`), **sauf l'accent en thème clair**. Celui-ci tombe à 4.20:1 sur
+le grain d'Avant, et sous 4.5:1 dès 3 % de grain. D'où la règle : **aucun texte en accent
+en Avant ni en Pendant**. Elle découle déjà de « l'accent arrive à l'époque 3 », et un
+test la vérifie.
+
 ## Motion
 
 | Usage | Durée | Easing (GSAP) |
@@ -140,12 +175,12 @@ Règles :
 - Une seule timeline GSAP pilote la molette ; les époques sont des plages de cette timeline.
 - Le contenu clé (accroche, offres, contact) ne s'anime **jamais** en boucle et reste
   lisible sans animation.
-- Sous `prefers-reduced-motion` : pas de shader, pas de parallaxe, fondus courts, et
+- Sous `prefers-reduced-motion` : pas de parallaxe, fondus courts, et
   toute boucle à l'arrêt (y compris la trotteuse de la montre).
 - L'intro ne dépasse pas **2 s** entre l'appui sur le poussoir et l'affichage du hero.
   Le poussoir est cliquable au premier frame, sans mise en place préalable.
-  Voir `MONTRE.md` § Budget : l'assemblage complet ne tient pas dans ces 2 s, et il
-  faut trancher ce que l'intro montre.
+  L'intro joue l'assemblage 1 → 2 seulement (`MONTRE.md` § Budget) : l'assemblage
+  complet ne tient pas dans ces 2 s.
 
 ## Hiérarchie du hero
 

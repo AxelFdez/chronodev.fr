@@ -1,0 +1,246 @@
+/*
+ * Couleurs de la montre par thème (docs/MONTRE.md § Montre et thème clair) et par état.
+ * Le boîtier laiton garde ses teintes dans les deux thèmes ; changent le cadran, les
+ * graduations, les sous-cadrans, les aiguilles et l'accent.
+ *
+ * États : --w-p2 (matière et instrument) et --w-p3 (accent) valent 0 ou 1. Le CSS les pose
+ * selon data-etat (sans JavaScript) ; la timeline GSAP les anime ensuite en style inline.
+ * Les couleurs changent par fondu croisé entre deux tracés, jamais par interpolation de
+ * couleur : le thème peut changer à tout moment, et l'accent reste un vrai var(--accent).
+ */
+.boite {
+  position: relative;
+}
+
+.watch {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+
+  --w-p2: 1;
+  --w-p3: 1;
+
+  --w-dial: var(--surface);
+  --w-tick-major-1: #3a4049;
+  --w-tick-major: #454c57;
+  --w-tick-minor: #3a4049;
+  --w-sub-face: #0f1318;
+  --w-sub-ring: #2e343d;
+  --w-sub-inner: #1f252d;
+  --w-sub-tick: #454c57;
+  --w-sub-tick-minor: #2e343d;
+  --w-hand-hour: #b8893b;
+  --w-hand-minute: #d9b26a;
+  --w-seconds-2: #d9b26a; /* laiton à l'état 2 : aucun pixel d'accent avant l'état 3 */
+}
+
+.watch[data-etat='1'] {
+  --w-p2: 0;
+  --w-p3: 0;
+}
+
+.watch[data-etat='2'] {
+  --w-p3: 0;
+}
+
+:global(:root[data-theme='light']) .watch {
+  --w-tick-major-1: #cec8bb;
+  --w-tick-major: #b8b2a4;
+  --w-tick-minor: #cec8bb;
+  --w-sub-face: var(--bg);
+  --w-sub-ring: var(--border);
+  --w-sub-inner: #ece8df;
+  --w-sub-tick: #b8b2a4;
+  --w-sub-tick-minor: var(--border);
+  --w-hand-hour: var(--brass);
+  --w-hand-minute: #b8893b;
+  --w-seconds-2: #b8893b;
+  /* Le reflet n'a pas d'équivalent sur fond clair : une ombre portée douce le remplace. */
+  filter: drop-shadow(0 14px 22px rgb(22 24 28 / 0.16));
+}
+
+:global(:root[data-theme='light']) .specular {
+  display: none;
+}
+
+/* --- Présences --- */
+
+.l2 {
+  opacity: var(--w-p2);
+}
+
+.l3 {
+  opacity: var(--w-p3);
+}
+
+.filet {
+  opacity: calc(var(--w-p3) * 0.28);
+}
+
+.tick180 {
+  opacity: calc(1 - var(--w-p2));
+}
+
+/* --- Couleurs --- */
+
+.dial {
+  fill: var(--w-dial);
+}
+
+.ticksMajor1 {
+  stroke: var(--w-tick-major-1);
+}
+
+.ticksMajor2 {
+  stroke: var(--w-tick-major);
+}
+
+.ticksMinor {
+  stroke: var(--w-tick-minor);
+}
+
+.subdialFace {
+  fill: var(--w-sub-face);
+  stroke: var(--w-sub-ring);
+}
+
+.subdialInner {
+  stroke: var(--w-sub-inner);
+}
+
+.subdialTicks {
+  stroke: var(--w-sub-tick);
+}
+
+.subdialTicksMinor {
+  stroke: var(--w-sub-tick-minor);
+}
+
+.daynightFace {
+  fill: var(--w-sub-face);
+  stroke: var(--w-sub-ring);
+}
+
+.daynightLine {
+  stroke: var(--w-sub-ring);
+}
+
+.daynightHollow {
+  stroke: var(--w-sub-tick);
+}
+
+.accentFill {
+  fill: var(--accent);
+}
+
+.hourHand {
+  stroke: var(--w-hand-hour);
+}
+
+.minuteHand {
+  stroke: var(--w-hand-minute);
+}
+
+.handsCap {
+  fill: var(--w-hand-hour);
+}
+
+.seconds {
+  stroke: var(--w-seconds-2);
+}
+
+.secondsAccent {
+  stroke: var(--accent);
+  opacity: var(--w-p3);
+}
+
+.cap {
+  fill: var(--w-seconds-2);
+}
+
+.capAccent {
+  fill: var(--accent);
+  opacity: var(--w-p3);
+}
+
+/* --- Poussoir : 200 ms enfoncé, 400 ms retour en back.out(1.7) (DESIGN.md § Motion) --- */
+
+.poussoir {
+  transition: transform var(--dur-release) var(--ease-back-out);
+}
+
+/* Une translation pure : aucune origine de transformation en jeu (PLAN.md S10). */
+.watch[data-appui] .poussoir {
+  transform: translate(-2.5px, 2.5px);
+  transition-duration: var(--dur-press);
+  transition-timing-function: var(--ease-power2-out);
+}
+
+.chrono {
+  position: absolute;
+  /* Centre du poussoir (291.8, 188.2) dans le viewBox 0 41 380 412. */
+  left: 76.8%;
+  top: 35.7%;
+  inline-size: 48px;
+  block-size: 48px;
+  margin: -24px 0 0 -24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Sans JavaScript, le chrono ne bouge pas : rien à arrêter. */
+:global(:root:not([data-js])) .chrono {
+  display: none;
+}
+
+/* --- Intro : la montre attend au centre, à l'état 1, puis rejoint le hero (Flip) --- */
+
+:global(:root[data-intro='a-jouer']:not(:has(#contenu:target))) .boite,
+:global(:root[data-intro='en-cours']) .boite {
+  /* Centrée par left/top calculés, sans transform ni translate : GSAP (Flip) s'approprie
+     ces propriétés au premier contact et les garderait après l'intro. Hauteur = largeur
+     × 412/380, le rapport du viewBox. */
+  --taille-intro: min(78vw, 56vh, 420px);
+  position: fixed;
+  z-index: 15;
+  left: calc(50% - var(--taille-intro) / 2);
+  top: calc(50% + 24px - var(--taille-intro) * 412 / 380 / 2);
+  inline-size: var(--taille-intro);
+}
+
+/* Avant GSAP, le CSS seul affiche l'état 1 (le script inline a recentré les aiguilles). */
+:global(:root[data-intro='a-jouer']:not(:has(#contenu:target))) .watch {
+  --w-p2: 0;
+  --w-p3: 0;
+}
+
+/* Le poussoir à presser : un double anneau, lisible sur le laiton comme sur le fond. */
+:global(:root[data-intro='a-jouer']) .chrono {
+  box-shadow:
+    0 0 0 2px var(--bg),
+    0 0 0 4px var(--text);
+}
+
+/* --- Couronne : la molette au pointeur --- */
+
+.couronne {
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .couronne {
+    pointer-events: auto;
+    cursor: ew-resize;
+    touch-action: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poussoir,
+  .watch[data-appui] .poussoir {
+    transition: none;
+  }
+}

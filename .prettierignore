@@ -1,0 +1,10 @@
+.next
+out
+build
+artifacts
+test-results
+playwright-report
+package-lock.json
+docs
+assets
+CLAUDE.md

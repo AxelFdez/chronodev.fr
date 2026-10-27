@@ -1,0 +1,224 @@
+/* --- Grain : lignes horizontales, par-dessus le fond, sous le contenu --- */
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  background: repeating-linear-gradient(to bottom, var(--grain-teinte) 0 1px, transparent 1px 3px);
+  /* Suit la montre : changement d'époque en 1,2 s, power2.inOut (DESIGN.md § Motion). */
+  transition: opacity 1.2s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain {
+    transition-duration: 200ms; /* fondu court */
+  }
+}
+
+:global(:root:has(input[name='epoque'][value='avant']:checked)) .grain {
+  opacity: var(--grain-avant);
+}
+
+:global(:root:has(input[name='epoque'][value='pendant']:checked)) .grain {
+  opacity: var(--grain-pendant);
+}
+
+/* --- Scène : hero, montre, époques --- */
+
+.scene {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 16px 56px;
+  display: grid;
+  grid-template-areas:
+    'hero'
+    'montre'
+    'epoques';
+  gap: 40px;
+}
+
+.hero {
+  grid-area: hero;
+  display: grid;
+  gap: 20px;
+  justify-items: start;
+}
+
+.surtitre {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-brass);
+}
+
+.accroche {
+  font-size: clamp(2.25rem, 1.4rem + 4vw, 4.5rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  max-width: 14ch;
+  text-wrap: balance;
+}
+
+.sousTitre {
+  font-size: clamp(1.125rem, 1rem + 0.6vw, 1.375rem);
+  line-height: 1.45;
+  max-width: 34ch;
+}
+
+.cible {
+  color: var(--text-muted);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  margin-top: 8px;
+  padding: 0 24px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color var(--dur-micro) var(--ease-power2-out);
+}
+
+/* Survol : l'accent tire vers l'encre du texte, le contraste avec --accent-ink augmente. */
+.cta:hover {
+  background: color-mix(in srgb, var(--accent) 85%, var(--text));
+}
+
+.montre {
+  grid-area: montre;
+  justify-self: center;
+  inline-size: min(240px, 64vw);
+}
+
+.zoneEpoques {
+  grid-area: epoques;
+  padding-top: 48px;
+  border-top: 1px solid var(--border);
+}
+
+/* --- Contact --- */
+
+.contact {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 56px 16px 72px;
+  border-top: 1px solid var(--border);
+  scroll-margin-top: 16px; /* cible du CTA */
+}
+
+.titre {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.coordonnees {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 12px 24px;
+  align-items: baseline;
+  margin: 24px 0 0;
+}
+
+.coordonnees dt {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.coordonnees dd {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+@media (min-width: 900px) {
+  .scene {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+    grid-template-areas:
+      'hero montre'
+      'epoques montre';
+    column-gap: 64px;
+    row-gap: 96px;
+    padding: 96px 32px;
+  }
+
+  .montre {
+    inline-size: 100%;
+    align-self: stretch;
+  }
+
+  .montreCollante {
+    position: sticky;
+    top: 32px;
+  }
+
+  .contact {
+    padding: 72px 32px 96px;
+  }
+}
+
+/* --- Intro de première visite (lib/intro.ts) ---
+ * Active tant que <html data-intro> vaut a-jouer (sauf lien « Passer » suivi) ou en-cours.
+ * Le texte du hero n'est masqué qu'à l'œil (opacité) : les lecteurs d'écran gardent le
+ * titre de la page. Tout ce qui se focalise est masqué par visibility : aucun focus
+ * invisible. */
+
+.hero,
+.zoneEpoques,
+.contact {
+  transition: opacity 0.4s var(--ease-power2-out);
+}
+
+:global(:root[data-intro='a-jouer']:not(:has(#contenu:target)))
+  :is(.hero, .zoneEpoques, .contact, .grain),
+:global(:root[data-intro='en-cours']) :is(.hero, .zoneEpoques, .contact, .grain) {
+  opacity: 0;
+}
+
+:global(:root[data-intro='a-jouer']:not(:has(#contenu:target))) :is(.cta, .zoneEpoques, .contact),
+:global(:root[data-intro='en-cours']) :is(.cta, .zoneEpoques, .contact) {
+  visibility: hidden;
+}
+
+.intro {
+  display: none;
+}
+
+:global(:root[data-intro='a-jouer']:not(:has(#contenu:target))) .intro {
+  position: fixed;
+  z-index: 16;
+  left: 0;
+  right: 0;
+  bottom: 24px;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.introConsigne {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.introPasser {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  color: var(--text);
+}

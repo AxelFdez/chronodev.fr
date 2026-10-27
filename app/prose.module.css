@@ -1,0 +1,37 @@
+/* Pages de texte simples : 404, mentions légales. */
+.main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 56px 16px 72px;
+}
+
+.main h1 {
+  font-size: clamp(2rem, 1.5rem + 2.5vw, 3rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.main h2 {
+  margin-top: 40px;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.main p {
+  margin-top: 12px;
+  max-width: 65ch;
+}
+
+.main a {
+  display: inline-block;
+  padding-block: 10px; /* cible tactile ≥ 44 px */
+  color: var(--accent);
+}
+
+@media (min-width: 768px) {
+  .main {
+    padding: 96px 32px;
+  }
+}
