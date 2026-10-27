@@ -488,7 +488,7 @@ juge.
 Test iPhone d'Axel sur l'aperçu Pages (27/10/2026) : les aiguilles tournent autour du bon
 centre (S10 écarté), la migration se fait sans saut, le thème clair s'applique sans éclair.
 
-### Prototype — sections à la suite · branche, en attente de la décision d'Axel
+### T8 — Époques en sections à la suite · ✓ retenue (décision d'Axel, option B)
 
 Retour d'Axel après le test iPhone : avec les onglets et Après par défaut, **le visiteur
 lit le résultat avant le problème**. L'ordre d'une page de vente est promesse (le hero),
@@ -496,12 +496,15 @@ problème (Avant), méthode (Pendant), puis offre, preuves et contact (Après). 
 ne peuvent pas donner à la fois cet ordre et des offres visibles sans clic. Des sections à
 la suite le peuvent.
 
-Ce que fait le prototype :
+Ce que fait la tranche :
 - **Avant, Pendant, Après à la suite**, lus en défilant. Sans JavaScript, tout est visible.
 - **L'époque à l'écran** est la section qui croise le milieu de la fenêtre
   (`IntersectionObserver`, `lib/epoque.ts`), posée sur `<html data-epoque-courante>`.
+  - La ligne de lecture est à **30 %** du haut de la fenêtre, pas au milieu : une section
+    courte amenée en haut par le repère croise toujours cette ligne, alors qu'elle pouvait
+    ne pas atteindre le milieu d'un écran haut, et le repère marquait la suivante.
   - La montre la suit : complète dans le hero (option B d'Axel, le 2 → 3 après l'intro est
-    gardé), puis 1, 2 et 3 en descendant.
+    gardé), puis 1, 2 et 3 en descendant. Sous la dernière section (le contact), Après.
   - Le grain la suit aussi.
 - **Un repère collant « Avant · Pendant · Après »** remplace le groupe radio : de vraies
   ancres, avec `aria-current="step"` sur la section à l'écran.
@@ -511,12 +514,27 @@ Ce que fait le prototype :
   valider ou réécrire par Axel.
 
 Le prix, mesuré : en mobile, « Offres » passe d'environ 1 050 px à 2 161 px du haut de la
-page. Le bouton de contact du hero reste à un toucher.
+page. Le bouton de contact du hero reste à un toucher. En mobile, la montre n'est pas à
+l'écran pendant la lecture des époques : son évolution est un bonus du desktop.
 
-À faire si le prototype est retenu :
-- tests : époques, montre (timeline), captures, parcours sous mouvement réduit ;
-- contrat (`CLAUDE.md`) : décisions Molette et Portée d'une époque ;
-- docs : `BRIEF.md`, `MONTRE.md`.
+Décidé par Axel sur vidéos comparatives (version actuelle contre prototype, mobile et
+desktop) : sections à la suite, option B, et Pendant raccourci.
+
+Vérifié :
+- **Tests** : les 37 qui pilotaient les onglets passent par le défilement
+  (`allerAEpoque`). Nouveaux : l'ordre de lecture, le parcours hero → 1 → 2 → 3 →
+  contact, le repère au clavier, le repère toujours visible en haut, le grand écran et
+  l'écran bas.
+- **Par mutation** :
+  - la ligne de lecture remise au milieu fait échouer le test grand écran ;
+  - sans le repli « sous Après, c'est Après », le test écran bas échoue.
+- **Défaut trouvé par le test écran bas.** Un saut direct du hero au contact (le bouton
+  du hero) ne fait croiser la ligne à aucune époque : `IntersectionObserver` ne prévenait
+  pas, et rien n'était recalculé. Le contact est désormais observé aussi. Vérifié par
+  mutation : sans lui, 5 échecs sur 5 ; avec, 5 succès sur 5.
+- **axe** : aucune violation, trois époques dans les deux thèmes.
+- **Contrat et docs** : `CLAUDE.md` (Époques, Portée d'une époque), `BRIEF.md`,
+  `MONTRE.md`, `DESIGN.md`, `MISE-EN-LIGNE.md`.
 
 ---
 

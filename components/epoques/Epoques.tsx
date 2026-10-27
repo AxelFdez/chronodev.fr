@@ -5,9 +5,9 @@ import { Repere } from './Repere';
 import styles from './Epoques.module.css';
 
 /**
- * Section des époques, prototype « sections à la suite » : Avant, Pendant et Après se lisent
- * dans l'ordre en défilant, le problème avant l'offre. La section qui croise le milieu de
- * l'écran donne l'état de la montre et le grain (lib/epoque.ts). Tout est dans le HTML servi,
+ * Section des époques, à la suite (PLAN.md § T8) : Avant, Pendant et Après se lisent
+ * dans l'ordre en défilant, le problème avant l'offre. La section qui croise la ligne de
+ * lecture donne l'état de la montre et le grain (lib/epoque.ts). Tout est dans le HTML servi,
  * et tout est visible sans JavaScript.
  */
 export function Epoques() {

@@ -12,7 +12,7 @@ de production** (nginx), pas seulement contre le serveur local.
 |---|---|---|
 | 1 | Contrastes ≥ 4.5:1, mesurés | `scripts/contrast.mjs` (35 paires, dont le texte sur le grain le plus dense) ; axe sur toutes les pages, les trois époques, l'intro, le menu ouvert et la veille, dans les deux thèmes. |
 | 2 | Mouvement réduit : aucune boucle | Un parcours complet (époques, menu, thème, chrono) ne laisse ni boucle, ni mouvement, ni animation de plus de 250 ms. Pas d'intro, chrono au repos, GSAP jamais chargé. |
-| 3 | Sans JavaScript : page complète | Accueil, époques (onglets en CSS seul), menu, mentions légales et 404. Aucun contexte WebGL créé. |
+| 3 | Sans JavaScript : page complète | Accueil, époques (les trois sections, toutes visibles), menu, mentions légales et 404. Aucun contexte WebGL créé. |
 | 4 | 390 px : ni débordement ni titre mal coupé | Contrôlé à 390 et à 360 px, sur les trois époques, les mentions, la 404 et l'intro. Un test vérifie qu'aucun mot de titre n'est coupé sur deux lignes. |
 | 5 | Thème avant le premier paint | Au premier frame, CSS et JS retardés de 800 ms, le thème clair est déjà là. Il se conserve d'une page à l'autre, et un stockage bloqué ne casse rien. |
 | 6 | Offres et contact dans le HTML servi | Vérifié sur le HTML brut renvoyé par le serveur, pas dans l'inspecteur. |
@@ -95,9 +95,10 @@ Données des sites web, puis `axelfdez.github.io`.
 3. **Aiguilles.** Elles sont à l'heure, la trotteuse avance d'un pas par seconde et tourne
    autour du **bon centre** (risque S10 propre à WebKit), et le jour/nuit est cohérent
    avec l'heure.
-4. **Époques.** Avant, Pendant, Après : les aiguilles migrent dans le sous-cadran **sans
-   saut ni décalage** (GSAP `svgOrigin` sous WebKit), le grain apparaît, et le cyan
-   n'arrive qu'à Après.
+4. **Époques.** En défilant, Avant, Pendant puis Après : le repère suit la section à
+   l'écran, le grain apparaît (plus fort en Avant), et le cyan n'arrive qu'à Après. Sur
+   tablette ou ordinateur, la montre suit : les aiguilles migrent dans le sous-cadran
+   **sans saut ni décalage** (GSAP `svgOrigin` sous WebKit).
 5. **Thème.** Basculer en clair, recharger : **aucun éclair noir**.
 6. **Menu, poussoir chrono** (arrêt puis relance), **lien « Passer l'intro »**.
 7. **Réduire les animations** (réglages d'accessibilité du téléphone) : pas d'intro,

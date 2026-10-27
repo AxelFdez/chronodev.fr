@@ -9,7 +9,7 @@ Le risque de cette direction est le cliché steampunk-cyber. Garde-fous :
 
 - **Laiton** : matière et filets. Boîtier, couronne, poussoir, surtitres, séparateurs.
   Jamais un aplat de pleine largeur. Porté par le **hero et la montre**, vus par tout
-  le monde — pas par l'époque 1, que la molette ne montre plus par défaut.
+  le monde, et par les étiquettes des époques — jamais par le fond d'une époque.
 - **Accent** : seul accent du site. Interaction (survol, focus, état actif), données
   en direct, époque 3. Un seul accent par thème.
 - Le reste est neutre. C'est ce qui rend le site lisible et professionnel.
@@ -172,7 +172,7 @@ test la vérifie.
 | Changement d'époque | 1,2–2 s | `power2.inOut` |
 
 Règles :
-- Une seule timeline GSAP pilote la molette ; les époques sont des plages de cette timeline.
+- Une seule timeline GSAP pilote la montre ; les époques sont des plages de cette timeline.
 - Le contenu clé (accroche, offres, contact) ne s'anime **jamais** en boucle et reste
   lisible sans animation.
 - Sous `prefers-reduced-motion` : pas de parallaxe, fondus courts, et

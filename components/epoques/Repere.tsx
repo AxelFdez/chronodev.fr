@@ -5,6 +5,10 @@ import { EPOQUES, type EpoqueId } from '@/content/epoques';
 import { setEpoque, useEpoque } from '@/lib/epoque';
 import styles from './Epoques.module.css';
 
+// La ligne de lecture, à 30 % du haut de la fenêtre. Plus bas (au milieu), une section courte
+// amenée en haut par le repère ne la croiserait pas : le repère marquerait la suivante.
+const LIGNE = 0.3;
+
 /**
  * Repère des époques, collant en haut de la section : des liens vers Avant, Pendant et Après
  * (de la navigation, pas un état à cocher), qui marquent la section à l'écran. De vraies
@@ -20,17 +24,23 @@ export function Repere() {
     const observateur = new IntersectionObserver(
       (entrees) => {
         for (const e of entrees) {
-          const id = (e.target as HTMLElement).dataset.epoque as EpoqueId;
+          const id = (e.target as HTMLElement).dataset.epoque as EpoqueId | undefined;
+          if (!id) continue; // le contact : observé seulement pour recalculer (voir plus bas)
           if (e.isIntersecting) visibles.add(id);
           else visibles.delete(id);
         }
-        // Une seule section croise la ligne du milieu, sauf à une frontière : la plus avancée.
-        setEpoque(EPOQUES.filter(({ id }) => visibles.has(id)).at(-1)?.id ?? null);
+        // Une seule section croise la ligne de lecture, sauf à une frontière : la plus avancée.
+        // Aucune : au-dessus d'Avant (le hero), pas d'époque ; sous Après (le contact), Après.
+        const croisee = EPOQUES.filter(({ id }) => visibles.has(id)).at(-1)?.id;
+        const fin = document.getElementById('epoque-apres')!.getBoundingClientRect().bottom;
+        setEpoque(croisee ?? (fin < innerHeight * LIGNE ? 'apres' : null));
       },
-      { rootMargin: '-50% 0px -50% 0px' }, // la ligne du milieu de la fenêtre
+      { rootMargin: `-${LIGNE * 100}% 0px -${(1 - LIGNE) * 100}% 0px` },
     );
+    // Le contact aussi : un saut direct du hero au contact (le bouton du hero) ne fait croiser
+    // la ligne à aucune époque, et rien ne serait recalculé.
     document
-      .querySelectorAll<HTMLElement>('section[data-epoque]')
+      .querySelectorAll<HTMLElement>('section[data-epoque], #contact')
       .forEach((s) => observateur.observe(s));
     return () => {
       observateur.disconnect();

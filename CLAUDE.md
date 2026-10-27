@@ -48,9 +48,9 @@ et `docs/BRIEF.md` (contenu et positionnement) avant d'écrire du code.
 | Intro | Joue l'assemblage **1 → 2 seulement**, 2 s au plus entre l'appui sur le poussoir et l'affichage du hero. Le passage 2 → 3 (0,8 s) se joue juste après l'apparition du hero. Voir `docs/MONTRE.md` § Budget. |
 | Rendu | **Pas de three.js, pas de WebGL.** La montre et l'intro sont en SVG + GSAP. |
 | Époques | Le projet **du client** : avant / pendant / après. Pas le CV d'Axel. |
-| Molette | Position par défaut au chargement : **Après**. La **couronne de la montre** est la molette (glisser, desktop) ; le groupe radio Avant / Pendant / Après en est le contrôle clavier et, sur mobile, les onglets. |
+| Époques | **Sections à la suite** : Avant, Pendant, Après se lisent en défilant, le problème avant l'offre. L'époque à l'écran est la section qui croise la ligne de lecture (30 % du haut). Un **repère collant** (vraies ancres) marque l'étape ; la **couronne** (glisser, desktop) fait défiler jusqu'à l'époque voisine. Dans le hero, la montre est complète. |
 | Menu | Un vrai bouton **« Menu »** dans la barre du haut, distinct de la couronne. |
-| Portée d'une époque | L'époque change la section des époques, l'état de la montre et le grain (pleine page). Le hero, la barre du haut et le contact ne changent pas. |
+| Portée d'une époque | L'époque à l'écran change l'état de la montre et le grain (pleine page). Le hero, la barre du haut et le contact ne changent pas. |
 | Thème | **Sombre par défaut**, `prefers-color-scheme` ignoré au premier chargement. Clair accessible par toggle. |
 | Accent sombre | Cyan `#3FE0F0`. |
 | Accent clair | Brique `#B84A3B`, accent unique du thème clair. |

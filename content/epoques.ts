@@ -1,6 +1,6 @@
 // Les trois époques du projet du client (BRIEF.md § Les trois époques). Textes d'Axel,
 // mis en forme ; rien n'est ajouté. Offres et preuve : valeurs manquantes entre crochets.
-// Prototype « sections à la suite » : Pendant raccourci, proposition à valider par Axel.
+// Pendant raccourci en T8, validé sur vidéo par Axel (PLAN.md § T8).
 
 export type EpoqueId = 'avant' | 'pendant' | 'apres';
 

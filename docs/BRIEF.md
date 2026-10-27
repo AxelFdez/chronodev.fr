@@ -35,17 +35,18 @@ lui, est fixe : l'IA accélère, Axel décide et répond du résultat.
   chronographe et la montre s'assemble, de l'état Avant à l'état Pendant (voir
   `MONTRE.md` § Budget). En SVG + GSAP, sans 3D. Jouée une seule fois, sautable,
   plafonnée à 2 s.
-- **Site** : la couronne devient une molette de temps (draggable, doublée d'un contrôle
-  clavier ; trois onglets sur mobile). Chaque position est une époque **du projet du
-  client**. L'esthétique entière change d'une époque à l'autre, et **la montre elle-même
-  se construit** — voir `MONTRE.md`.
-- La montre reste comme motif : couronne = molette, second poussoir = bascule de thème,
+- **Site** : les trois époques **du projet du client** se lisent à la suite, en
+  défilant : le problème (Avant), la méthode (Pendant), puis l'offre (Après). L'époque à
+  l'écran change l'esthétique, et **la montre elle-même se construit** au fil de la
+  lecture — voir `MONTRE.md`. La couronne fait défiler d'une époque à l'autre (desktop).
+- La montre reste comme motif : couronne = navigation entre les époques, second poussoir = bascule de thème,
   chrono visible. Elle ne disparaît pas après l'intro. Le menu est un bouton « Menu »
   dans la barre du haut.
-- « L'esthétique entière » change dans ces limites : la section des époques, l'état de
-  la montre et le grain. Le hero, la barre du haut et le contact restent fixes.
-- Position par défaut de la molette au chargement : **Après**, là où sont les offres et
-  le contact.
+- « L'esthétique entière » change dans ces limites : l'état de la montre et le grain. Le
+  hero, la barre du haut et le contact restent fixes.
+- Ordre de lecture : Avant, Pendant, Après, **à la suite**. Décision d'Axel après le
+  test iPhone : le visiteur doit lire le problème avant le résultat. Dans le hero, la
+  montre est complète (`PLAN.md` § T8).
 
 ## Les trois époques — le projet du client
 
@@ -97,8 +98,8 @@ sans témoin.
   en couche d'enrichissement. Pas de WebGL.
 - Intro sautable, non rejouée à la deuxième visite.
 - Fallback statique propre sans JavaScript et sous `prefers-reduced-motion`.
-- Mobile : intro allégée, molette remplacée par trois onglets — glisser sur un cercle au
-  pouce est trop imprécis.
+- Mobile : intro allégée ; le repère Avant · Pendant · Après sert de navigation — glisser
+  sur un cercle au pouce est trop imprécis.
 - Thème sombre par défaut, clair par toggle. Le choix persiste et s'applique avant le
   premier paint.
 
