@@ -61,32 +61,32 @@ entre crochets. Le build Docker fait la même vérification avec `--build-arg PR
 - **Le titre de la page** (aujourd'hui « chronodev.fr ») et sa description, pour les
   résultats de recherche.
 
-## 3. Aperçu protégé (Dokploy)
+## 3. Aperçu (GitHub Pages)
 
-Suivre `docs/DEPLOIEMENT.md` :
-- application de type Dockerfile, port 80, domaine et HTTPS ;
-- authentification basique activée, `ROBOTS_TAG` laissé à sa valeur par défaut
-  (`noindex`) ;
-- dossier de veille créé sur l'hôte et contenant `derniere.json` sans entrée, puis monté.
+Décision d'Axel : l'aperçu est sur GitHub Pages, Dokploy est réservé à la production
+(`docs/DEPLOIEMENT.md`). Mise en place, une fois, côté GitHub, **dans cet ordre** :
+1. passer le dépôt en **public** ;
+2. faire de `main` la **branche par défaut** (Settings → General), avant l'étape 3 :
+   l'environnement `github-pages` refuse sinon les déploiements depuis `main` ;
+3. Settings → Pages → Source : **GitHub Actions** ;
+4. protéger `main` (Settings → Branches) : PR obligatoire, check **« Vérifier »** requis.
 
-Côté GitHub, avant de brancher Dokploy sur `main` :
-- faire de `main` la branche par défaut (Settings → General) ;
-- protéger `main` (Settings → Branches) : PR obligatoire, check **« Vérifier »** requis.
-  Dokploy construit tout ce qui arrive sur `main`, sans regarder la CI. C'est la protection
-  qui garantit que rien n'y arrive sans être passé au vert.
+Ensuite, chaque push vert sur `main` publie `https://axelfdez.github.io/chronodev.fr/`.
+
+L'aperçu est **public et sans mot de passe** : les valeurs entre crochets y sont visibles.
+Il porte une balise `noindex`, mais aucun en-tête de sécurité (Pages n'en permet pas).
+C'est de quoi tester sur téléphone, pas l'image de production.
 
 Contrôle :
 ```sh
-curl -sI https://chronodev.fr/ -u identifiant:motdepasse | grep -i -E 'content-security|x-robots|strict-transport'
+curl -s https://axelfdez.github.io/chronodev.fr/ | grep -o '<meta name="robots"[^>]*>'
 ```
-
-Si le build échoue avec une erreur 429 de Docker Hub (trop de téléchargements anonymes
-depuis l'IP du VPS), il suffit d'attendre, ou de se connecter à Docker Hub sur le VPS.
 
 ## 4. Vrais appareils : iPhone (Safari) et Android (Chrome)
 
-Pour chaque appareil, commencer par **effacer les données du site** : c'est ce qui recrée
-une première visite.
+Sur l'aperçu Pages. Pour chaque appareil, commencer par **effacer les données du site** :
+c'est ce qui recrée une première visite. Sur iPhone : Réglages → Safari → Avancé →
+Données des sites web, puis `axelfdez.github.io`.
 
 1. **Intro.** La montre attend au centre, à l'état 1, à l'heure, avec le poussoir cerclé.
    Un toucher sur le poussoir doit amener le hero en moins de 2 s (sur mobile : fondu,
@@ -119,11 +119,15 @@ d'audience.
 
 ## 6. Bascule en production
 
-Quand les étapes 2 à 5 sont faites :
+Quand les étapes 2 à 5 sont faites (détail dans `docs/DEPLOIEMENT.md` § Production) :
 1. remplir toutes les valeurs, et constater que `PRODUCTION=1 npm run check:placeholders`
    passe ;
-2. dans Dokploy, mettre l'argument de build `PRODUCTION=1` et la variable `ROBOTS_TAG=all`,
-   puis retirer l'authentification basique ;
-3. redéployer, puis contrôler les en-têtes (`x-robots-tag: all`) et le HTML servi ;
-4. passer l'URL de production dans PageSpeed Insights, en mobile ;
-5. faire publier par n8n une première entrée de veille, validée.
+2. tranche de mise en production : la CI publie l'image sur GHCR, construite avec
+   `PRODUCTION=1` ;
+3. dans Dokploy : application de type image Docker, `ROBOTS_TAG=all`, dossier de veille
+   créé sur l'hôte avec `derniere.json` sans entrée, puis monté ;
+4. **répétition** sur un sous-domaine de test, avec les contrôles d'en-têtes ;
+5. DNS chez OVH : `A` **et** `AAAA` de `chronodev.fr` (et `www`) vers le VPS ;
+6. contrôler les en-têtes (`x-robots-tag: all`) et le HTML servi ;
+7. passer l'URL de production dans PageSpeed Insights, en mobile ;
+8. faire publier par n8n une première entrée de veille, validée.
