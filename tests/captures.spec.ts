@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { DIX_HEURES, hydrated, montreAuRepos, storeTheme } from './helpers';
+import { allerAEpoque, DIX_HEURES, hydrated, montreAuRepos, storeTheme } from './helpers';
 import { INTRO_VUE, PREMIERE_VISITE } from './etat-initial';
 
 // Captures à LIRE avant de conclure une tranche : artifacts/screens/.
@@ -43,8 +43,7 @@ for (const [name, viewport] of Object.entries(viewports)) {
   }
 }
 
-// Les deux autres époques, cadrées sur leur section (la montre la suit sur desktop).
-const NOMS = { avant: 'Avant', pendant: 'Pendant' } as const;
+// Avant et Pendant, cadrées sur leur section (la montre la suit sur desktop).
 for (const [name, viewport] of Object.entries(viewports)) {
   for (const theme of ['dark', 'light'] as const) {
     for (const epoque of ['avant', 'pendant'] as const) {
@@ -58,10 +57,9 @@ for (const [name, viewport] of Object.entries(viewports)) {
         await page.goto('/');
         await hydrated(page);
         await page.evaluate(() => document.fonts.ready);
-        await page.getByRole('radio', { name: NOMS[epoque] }).click();
+        await allerAEpoque(page, epoque);
         await montreAuRepos(page);
         await page.clock.pauseAt(new Date(DIX_HEURES.getTime() + 60_000));
-        await page.locator('#epoques').evaluate((e) => e.scrollIntoView({ block: 'start' }));
         await page.screenshot({ path: `artifacts/screens/epoque-${name}-${theme}-${epoque}.png` });
         await context.close();
       });
@@ -75,8 +73,7 @@ for (const [name, viewport] of Object.entries(viewports)) {
     });
     const page = await context.newPage();
     await page.goto('/');
-    await page.getByRole('radio', { name: 'Avant' }).click();
-    await page.locator('#epoques').evaluate((e) => e.scrollIntoView({ block: 'start' }));
+    await page.locator('#epoque-avant').evaluate((e) => e.scrollIntoView({ block: 'start' }));
     await page.screenshot({ path: `artifacts/screens/epoque-${name}-dark-avant-sans-js.png` });
     await context.close();
   });

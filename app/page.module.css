@@ -17,11 +17,12 @@
   }
 }
 
-:global(:root:has(input[name='epoque'][value='avant']:checked)) .grain {
+/* L'époque à l'écran (lib/epoque.ts). Sans JavaScript, aucune : pas de grain. */
+:global(:root[data-epoque-courante='avant']) .grain {
   opacity: var(--grain-avant);
 }
 
-:global(:root:has(input[name='epoque'][value='pendant']:checked)) .grain {
+:global(:root[data-epoque-courante='pendant']) .grain {
   opacity: var(--grain-pendant);
 }
 

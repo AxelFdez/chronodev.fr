@@ -3,6 +3,7 @@
 import type { gsap as Gsap } from 'gsap';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { EPOQUES } from '@/content/epoques';
+import { allerA, etatDe, lireEpoque, useEpoque } from '@/lib/epoque';
 import { poserHeure } from '@/lib/horloge';
 import {
   appuiPrecoce,
@@ -37,29 +38,14 @@ import styles from './Watch.module.css';
  *
  * États : deux présences numériques, --w-p2 et --w-p3, posées par le CSS selon data-etat
  * (sans JavaScript), puis animées par la timeline GSAP (lib/montre-animation.ts). L'état suit
- * l'époque cochée dans la section des époques. Les aiguilles sont à l'heure réelle
- * (lib/horloge.ts) ; le poussoir arrête et relance le chrono.
+ * l'époque à l'écran (lib/epoque.ts) : complète dans le hero, puis 1, 2 et 3 en descendant
+ * Avant, Pendant et Après. Les aiguilles sont à l'heure réelle (lib/horloge.ts) ; le
+ * poussoir arrête et relance le chrono.
  */
 
-// --- Lien avec le groupe radio des époques ---
-
-const radioCochee = () =>
-  document.querySelector<HTMLInputElement>('input[name="epoque"]:checked')?.value;
-
-function surChangement(onChange: () => void) {
-  document.addEventListener('change', onChange);
-  return () => document.removeEventListener('change', onChange);
-}
-const getEtat = (): Etat => EPOQUES.find((e) => e.id === radioCochee())?.etat ?? 3;
-const getEtatServeur = (): Etat => 3; // Après, l'époque par défaut
-
-/** Coche l'époque d'indice `index`, comme le ferait un clic sur son onglet. */
+/** Fait défiler jusqu'à l'époque d'indice `index`, comme le repère. */
 function choisirEpoque(index: number) {
-  const id = EPOQUES[Math.max(0, Math.min(EPOQUES.length - 1, index))].id;
-  const input = document.querySelector<HTMLInputElement>(`input[name="epoque"][value="${id}"]`);
-  if (!input || input.checked) return;
-  input.checked = true;
-  input.dispatchEvent(new Event('change', { bubbles: true }));
+  allerA(EPOQUES[Math.max(0, Math.min(EPOQUES.length - 1, index))].id);
 }
 
 // Glisser la couronne : 40 px vers la droite avancent d'une époque, vers la gauche reculent.
@@ -107,9 +93,9 @@ const POSE = { heures: 42.5, minutes: 150, secondes: 18 };
 
 export function Watch() {
   const intro = useIntro();
-  const etatRadio = useSyncExternalStore(surChangement, getEtat, getEtatServeur);
+  const etatEpoque = etatDe(useEpoque());
   // Pendant l'intro, la montre attend à l'état 1, puis s'assemble jusqu'à l'état 2.
-  const etat: Etat = intro === 'vue' ? etatRadio : intro === 'en-cours' ? 2 : 1;
+  const etat: Etat = intro === 'vue' ? etatEpoque : intro === 'en-cours' ? 2 : 1;
   const reduit = useSyncExternalStore(surPreference, getReduit, getReduitServeur);
   const svgRef = useRef<SVGSVGElement>(null);
   const boiteRef = useRef<HTMLDivElement>(null);
@@ -177,8 +163,8 @@ export function Watch() {
     anim.current.pret = import('gsap').then(({ gsap }) => {
       if (annule) return;
       const tl = construireTimeline(gsap, svg);
-      // L'état affiché à cet instant : 1 pendant l'attente de l'intro, sinon l'époque cochée.
-      tl.seek(LABEL[lireIntro() === 'vue' ? getEtat() : 1]);
+      // L'état affiché à cet instant : 1 pendant l'attente de l'intro, sinon l'époque à l'écran.
+      tl.seek(LABEL[lireIntro() === 'vue' ? etatDe(lireEpoque()) : 1]);
       Object.assign(anim.current, { gsap, tl });
       svg.dataset.gsap = '';
     });
@@ -604,7 +590,8 @@ export function Watch() {
 
         {/* Zone de prise de la couronne (anneau, couronne, tige), plus large que le dessin.
             Pointeur fin seulement : au pouce, c'est trop imprécis (BRIEF.md), les onglets
-            suffisent. Le clavier passe par le groupe radio : rien ici n'est focalisable. */}
+            suffisent. Le clavier passe par le repère des époques : rien ici n'est
+            focalisable. Glisser fait défiler jusqu'à l'époque voisine. */}
         <rect
           className={styles.couronne}
           data-part="couronne"

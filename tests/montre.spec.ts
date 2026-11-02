@@ -1,8 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 import {
+  allerAEpoque,
   angle,
   animationsInterdites,
   DIX_HEURES,
+  type Epoque,
   hydrated,
   MIDI,
   montreAuRepos,
@@ -12,7 +14,6 @@ import {
 // Tranche 4 : montre animée — heure réelle, chrono, timeline des époques.
 // À 10 h 08 min 30 s : heures 304°, minutes 51°, trotteuse 180°, jour/nuit -62°.
 
-const radio = (page: Page, nom: string) => page.getByRole('radio', { name: nom });
 const chrono = (page: Page) => page.getByRole('button', { name: 'Arrêter le chrono' });
 
 test('à l’heure dès le premier frame, avant React', async ({ page }) => {
@@ -118,7 +119,7 @@ test.describe('prefers-reduced-motion', () => {
     await page.clock.runFor(5000);
     expect(await angle(page, 'secondes')).toBe(0);
 
-    await radio(page, 'Avant').click();
+    await allerAEpoque(page, 'avant');
     // Aucune interpolation : l'état cible est posé tout de suite.
     const svg = page.locator('svg[data-etat]');
     await expect(svg).toHaveAttribute('data-etat', '1');
@@ -141,9 +142,9 @@ test.describe('timeline des époques', () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
   /** Durée d'un changement d'époque, mesurée dans la page. */
-  async function changer(page: Page, nom: string) {
+  async function changer(page: Page, epoque: Epoque) {
     const debut = await page.evaluate(() => performance.now());
-    await radio(page, nom).click();
+    await allerAEpoque(page, epoque);
     await page.locator('svg[data-anime]').waitFor({ state: 'attached' });
     await montreAuRepos(page);
     return (await page.evaluate(() => performance.now())) - debut;
@@ -166,17 +167,17 @@ test.describe('timeline des époques', () => {
     await page.locator('svg[data-gsap]').waitFor({ state: 'attached' });
     expect(await pivot(page)).toEqual({ x: 190, y: 352 });
 
-    const versPendant = await changer(page, 'Pendant');
+    const versPendant = await changer(page, 'pendant');
     expect(versPendant).toBeGreaterThanOrEqual(1150);
     expect(versPendant).toBeLessThanOrEqual(2300);
     expect(await pivot(page)).toEqual({ x: 190, y: 352 });
 
-    const versAvant = await changer(page, 'Avant');
+    const versAvant = await changer(page, 'avant');
     expect(versAvant).toBeGreaterThanOrEqual(1150);
     expect(versAvant).toBeLessThanOrEqual(2300);
     expect(await pivot(page)).toEqual({ x: 190, y: 290 });
 
-    const versApres = await changer(page, 'Après'); // la plus longue distance : 2 s
+    const versApres = await changer(page, 'apres'); // la plus longue distance : 2 s
     expect(versApres).toBeGreaterThanOrEqual(1800);
     expect(versApres).toBeLessThanOrEqual(2500);
     expect(await pivot(page)).toEqual({ x: 190, y: 352 });
@@ -190,13 +191,13 @@ test.describe('timeline des époques', () => {
     await page.goto('/');
     await hydrated(page);
     await page.locator('svg[data-gsap]').waitFor({ state: 'attached' });
-    await radio(page, 'Pendant').click();
+    await allerAEpoque(page, 'pendant');
     await montreAuRepos(page);
     // 10 h 09 min 15 s : la trotteuse pointe à 3 h, hors du trajet vertical des aiguilles (à
     // 30 s, elle le recouvrait et masquait tout ce qui passe dessous). Toujours dans le futur :
     // un test dure moins de 30 s.
     await page.clock.pauseAt(new Date(DIX_HEURES.getTime() + 45_000));
-    await radio(page, 'Avant').click();
+    await allerAEpoque(page, 'avant');
     // La migration occupe environ 450 à 750 ms du changement Pendant → Avant (1,2 s).
     await page.clock.runFor(600);
     const { echelle, dessus } = await page.evaluate(() => {

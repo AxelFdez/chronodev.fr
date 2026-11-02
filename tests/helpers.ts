@@ -1,4 +1,4 @@
-import type { Browser, Page } from '@playwright/test';
+import { expect, type Browser, type Page } from '@playwright/test';
 
 export const DARK_BG = 'rgb(11, 13, 16)'; // --bg sombre #0B0D10
 export const LIGHT_BG = 'rgb(246, 245, 242)'; // --bg clair #F6F5F2
@@ -32,6 +32,17 @@ export async function valeurDuPremierFrame<T>(page: Page, cle: string): Promise<
     cle,
   );
   return (await valeur.jsonValue()) as T;
+}
+
+export type Epoque = 'avant' | 'pendant' | 'apres';
+
+/**
+ * Amène la section d'une époque en haut de l'écran, comme le repère, sans défilement animé,
+ * puis attend qu'elle soit l'époque à l'écran (components/epoques/Repere.tsx).
+ */
+export async function allerAEpoque(page: Page, epoque: Epoque) {
+  await page.locator(`#epoque-${epoque}`).evaluate((s) => s.scrollIntoView({ block: 'start' }));
+  await expect(page.locator('html')).toHaveAttribute('data-epoque-courante', epoque);
 }
 
 export const pageBackground = (page: Page) =>

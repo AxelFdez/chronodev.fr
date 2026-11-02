@@ -14,9 +14,9 @@ sauf une exception documentée plus bas.
 - couleurs en variables par thème ;
 - ids préfixés `w-`.
 
-Les états 1, 2 et 3 passent par `data-etat` sur le `<svg>`. Depuis la tranche 3, l'état
-suit le radio coché de la section des époques (Avant = 1, Pendant = 2, Après = 3). Sans
-JavaScript, la montre reste à l'état 3. Les noms `#l1`, `#l2`,
+Les états 1, 2 et 3 passent par `data-etat` sur le `<svg>`. Depuis la tranche 8, l'état
+suit l'époque à l'écran, la section qui croise la ligne de lecture (Avant = 1,
+Pendant = 2, Après = 3 ; dans le hero, 3). Sans JavaScript, la montre reste à l'état 3. Les noms `#l1`, `#l2`,
 `#hands-central`… de ce document désignent les parties du dessin, pas des sélecteurs
 du code.
 
@@ -112,7 +112,8 @@ invisible à cette taille.
 
 Ont été **retirés**, et ne doivent pas revenir sans une donnée nouvelle :
 
-- **Le compteur d'époque.** La molette l'affiche déjà en mots avec un marqueur actif.
+- **Le compteur d'époque.** Le repère des époques l'affiche déjà en mots avec un
+  marqueur actif.
   Un compteur qui répète n'est pas faux, il est redondant — et la redondance coûte le
   même espace visuel que le mensonge.
 - **Le compteur de veille.** Le module « Dernière veille » donne déjà la date en texte.
@@ -167,8 +168,9 @@ aiguilles garde le temps d'être lisible, et le cyan n'apparaît pas dans l'intr
 **Décidé (`PLAN.md` C2) :**
 - **Justification.** L'option 1 tient parce que c'est la seule qui laisse la migration
   des aiguilles lisible en 2 s. L'argument d'origine, « le cyan devient la récompense du
-  premier tour de molette », est abandonné : la molette est sur Après au chargement, donc
-  le cyan est déjà là avant tout geste.
+  premier tour de molette », est abandonné : la montre est complète dans le hero, donc le
+  cyan est déjà là avant tout geste. En descendant, elle repasse à l'état 1 sur Avant,
+  puis se reconstruit (option B d'Axel, `PLAN.md` § T8).
 - **Passage 2 → 3.** Il se joue juste après l'apparition du hero, en 0,8 s, quand le
   texte est déjà lisible. Il ne compte pas dans les 2 s de l'intro, et l'accent arrive
   sans geste du visiteur.

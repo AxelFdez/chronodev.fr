@@ -3,6 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { PREMIERE_VISITE } from './etat-initial';
 import {
+  allerAEpoque,
   animationsInterdites,
   collectErrors,
   hydrated,
@@ -50,11 +51,15 @@ for (const largeur of [390, 360]) {
   test.describe(`${largeur} px : aucun débordement, aucun titre coupé`, () => {
     test.use({ viewport: { width: largeur, height: 800 } });
 
-    for (const epoque of ['Avant', 'Pendant', 'Après']) {
-      test(`accueil, ${epoque}`, async ({ page }) => {
+    for (const [epoque, nom] of [
+      ['avant', 'Avant'],
+      ['pendant', 'Pendant'],
+      ['apres', 'Après'],
+    ] as const) {
+      test(`accueil, ${nom}`, async ({ page }) => {
         await page.goto('/');
         await hydrated(page);
-        await page.getByRole('radio', { name: epoque }).click();
+        await allerAEpoque(page, epoque);
         expect(await debordement(page)).toBeLessThanOrEqual(0);
         expect(await motsCoupes(page)).toEqual([]);
       });
@@ -127,9 +132,9 @@ test.describe('mouvement réduit : parcours complet', () => {
     await page.goto('/');
     await hydrated(page);
     const etapes: [string, () => Promise<unknown>][] = [
-      ['Avant', () => page.getByRole('radio', { name: 'Avant' }).click()],
-      ['Pendant', () => page.getByRole('radio', { name: 'Pendant' }).click()],
-      ['Après', () => page.getByRole('radio', { name: 'Après' }).click()],
+      ['Avant', () => allerAEpoque(page, 'avant')],
+      ['Pendant', () => allerAEpoque(page, 'pendant')],
+      ['Après', () => allerAEpoque(page, 'apres')],
       ['menu', () => page.getByText('Menu', { exact: true }).click()],
       ['menu fermé', () => page.keyboard.press('Escape')],
       ['thème', () => page.getByRole('button', { name: 'Thème clair' }).click()],
@@ -207,8 +212,8 @@ test('parcours complet sans erreur dans la console', async ({ page }) => {
   const erreurs = collectErrors(page);
   await page.goto('/');
   await hydrated(page);
-  for (const epoque of ['Avant', 'Pendant', 'Après']) {
-    await page.getByRole('radio', { name: epoque }).click();
+  for (const epoque of ['avant', 'pendant', 'apres'] as const) {
+    await allerAEpoque(page, epoque);
     await montreAuRepos(page);
   }
   await page.getByText('Menu', { exact: true }).click();
